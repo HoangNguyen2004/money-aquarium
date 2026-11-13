@@ -1,5 +1,7 @@
 # Sổ Chi Tiêu
 
+**[Xem demo hồ cá](https://hoangnguyen2004.github.io/money-aquarium/aquarium-demo.html)** · [Mở ứng dụng](https://hoangnguyen2004.github.io/money-aquarium/)
+
 App quản lý chi tiêu cá nhân cho iPhone và Android (Expo / React Native).
 
 - **Tổng quan** — số dư tháng, danh sách giao dịch, thêm/sửa/xóa.
