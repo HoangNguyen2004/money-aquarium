@@ -1,0 +1,30 @@
+{
+  "expo": {
+    "name": "Sổ Chi Tiêu",
+    "slug": "so-chi-tieu",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.sochitieu.app"
+    },
+    "android": {
+      "package": "com.sochitieu.app"
+    },
+    "web": {
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-secure-store",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Cho phép truy cập ảnh để đọc hóa đơn.",
+          "cameraPermission": "Cho phép dùng camera để chụp hóa đơn."
+        }
+      ],
+      "expo-font"
+    ]
+  }
+}

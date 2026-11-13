@@ -1,0 +1,30 @@
+node_modules/
+.expo/
+dist/
+*.log
+android/
+ios/
+*.apk
+
+# Local settings and agent/browser caches
+.DS_Store
+.agents/
+.claude/
+.taste-skill/
+.vscode/
+skills-lock.json
+
+# Credentials and signing material
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.keystore
+*.jks
+credentials.json
+
+# Keep only selected screenshots made from synthetic demo data
+shots/*
+!shots/aquarium-species.png
+!shots/aquarium-normal-390.png
