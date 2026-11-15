@@ -28,3 +28,5 @@ credentials.json
 shots/*
 !shots/aquarium-species.png
 !shots/aquarium-normal-390.png
+
+!shots/aquarium-390.png

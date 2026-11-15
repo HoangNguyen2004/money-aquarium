@@ -1,3 +1,4 @@
+import { GoalsPanel } from '../components/GoalsPanel';
 import React, { useMemo, useState } from 'react';
 import { KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { C, R, themed } from '../theme';
@@ -162,6 +163,8 @@ export function PlanScreen() {
           );
         })}
       </Card>
+
+      <GoalsPanel />
 
       <Modal visible={!!editing} transparent animationType="fade" onRequestClose={() => setEditing(null)}>
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.backdrop}>

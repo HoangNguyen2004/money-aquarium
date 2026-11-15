@@ -10,10 +10,12 @@ export interface LedgerEntry {
   xp: number;
   pearls: number;
   eggs: number;
+  food?: number;
   at: string;
 }
 
 export interface Game {
+  food: number;
   fishCare?: Record<string, { days: number; lastFed: string }>;
   enabled: boolean;
   cafeName: string | null; // null: chưa mở quán
@@ -39,6 +41,7 @@ export interface Ctx {
 }
 
 export const newGame = (): Game => ({
+  food: 0,
   enabled: true,
   cafeName: null,
   startedAt: '',
@@ -90,13 +93,14 @@ export const UNIT = { coins: 'xu', pearls: 'ngọc', eggs: 'trứng' } as const;
 export const XP_PER_LEVEL = 60;
 export const level = (xp: number) => Math.floor(xp / XP_PER_LEVEL) + 1;
 
-type Delta = Partial<Pick<LedgerEntry, 'coins' | 'xp' | 'pearls' | 'eggs'>>;
+type Delta = Partial<Pick<LedgerEntry, 'coins' | 'xp' | 'pearls' | 'eggs' | 'food'>>;
 
 function grant(g: Game, key: string, label: string, d: Delta, at: string): Game {
   if (g.ledger.some((e) => e.key === key)) return g;
   const e: LedgerEntry = { key, label, coins: 0, xp: 0, pearls: 0, eggs: 0, ...d, at };
   return {
     ...g,
+    food: (g.food ?? 0) + (e.food ?? 0),
     coins: g.coins + e.coins,
     xp: g.xp + e.xp,
     pearls: g.pearls + e.pearls,
@@ -108,15 +112,15 @@ function grant(g: Game, key: string, label: string, d: Delta, at: string): Game 
 /** Mở quán: một hồ sơ, một con cá khởi đầu. Gọi lại không tạo trùng. */
 export function start(g: Game, name: string, today: string): Game {
   if (g.cafeName) return g;
-  return { ...g, cafeName: name.trim() || 'Hồ cá của tôi', startedAt: today, items: [STARTER_FISH] };
+  return { ...g, cafeName: name.trim() || 'Hồ cá của tôi', startedAt: today, food: 6, items: [STARTER_FISH] };
 }
 
 /** Thưởng giao dịch đầu tiên của mỗi ngày phát sinh (từ ngày mở quán). Gọi sau mỗi lần sổ giao dịch thay đổi. */
 export function settle(g: Game, transactions: Transaction[], today: string): Game {
   if (!g.cafeName || !g.enabled) return g;
   // Không thu hồi khi giao dịch bị xóa sau đó: đặc tả yêu cầu không phạt người dùng.
-  for (const d of new Set(transactions.map((t) => t.date))) {
-    if (d >= g.startedAt && d <= today) g = grant(g, `first-tx:${d}`, `Giao dịch đầu tiên ngày ${shortDate(d)}`, { coins: 10, xp: 5 }, today);
+  for (const d of new Set(transactions.filter((t) => t.amount > 0 && Number.isFinite(t.amount)).map((t) => t.date))) {
+    if (d >= g.startedAt && d <= today) g = grant(g, `first-tx:${d}`, `Giao dịch đầu tiên ngày ${shortDate(d)}`, { coins: 10, xp: 5, food: 3 }, today);
   }
   return g;
 }
@@ -150,7 +154,7 @@ export const WEEK_GOAL = 5;
 export function review(g: Game, ctx: Ctx, today: string): Game {
   if (!g.cafeName || g.reviewed.includes(today)) return g;
   g = { ...g, reviewed: [...g.reviewed, today] };
-  g = grant(g, `review:${today}`, `Rà soát ngày ${shortDate(today)}`, { coins: 10, xp: 5 }, today);
+  g = grant(g, `review:${today}`, `Rà soát ngày ${shortDate(today)}`, { coins: 10, xp: 5, food: 2 }, today);
   const limit = dailyLimit(ctx, today);
   // Chưa đặt ngân sách thì không có ngọc cho "đạt ngân sách".
   if (limit > 0 && spent(ctx, (d) => d === today) <= limit) {
@@ -243,3 +247,20 @@ export function careForFish(g: Game, date: string): Game {
   return changed ? { ...g, fishCare } : g;
 }
 export const growthLabel = (days: number) => days >= 7 ? 'Trưởng thành' : days >= 3 ? 'Đang lớn' : 'Cá nhỏ';
+
+
+/** Migration is deterministic and grants the welcome food only to pre-food saves. */
+export function migrateGame(saved?: Partial<Game>): Game {
+  const game = { ...newGame(), ...saved };
+  if (saved?.food === undefined && game.cafeName) game.food = 6;
+  if (!Number.isFinite(game.food) || game.food < 0) game.food = 0;
+  return game;
+}
+
+/** One portion per whole-tank feed. Only the first care of each day advances growth. */
+export function feedAquarium(g: Game, date: string): Game | string {
+  if (!g.cafeName) return 'Hãy tạo hồ cá trước.';
+  if (!ITEMS.some((item) => item.fish && g.items.includes(item.id) && !g.hidden.includes(item.id))) return 'Thả một cư dân vào hồ trước khi cho ăn.';
+  if (g.food < 1) return 'Hết thức ăn. Rà soát hôm nay để nhận 2 phần hoặc ghi giao dịch đầu tiên để nhận 3 phần.';
+  return { ...careForFish(g, date), food: g.food - 1 };
+}

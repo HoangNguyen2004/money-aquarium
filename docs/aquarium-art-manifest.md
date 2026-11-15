@@ -1,6 +1,6 @@
 # Aquarium artwork manifest — 12/11/2026
 
-The active aquarium uses original code-native SVG illustrations in `src/game/view/ZenArt.tsx`; there are no new downloaded or generated bitmap assets and no third-party image licenses to resolve.
+The 2D fallback uses original code-native SVG illustrations in `src/game/view/ZenArt.tsx`. The 3D renderer added on 15/11/2026 uses original mesh construction in `src/game/view/three/FishMesh.tsx` and scene geometry in `ThreeAquarium.tsx`. There are no downloaded models or new bitmap assets to license. Three.js, React Three Fiber and Expo modules retain their upstream licenses through npm dependencies.
 
 | Entity | Structure | Animated parts | Growth detail |
 |---|---|---|---|
@@ -17,3 +17,10 @@ Species metadata, swimming cadence, speed, size, phase offset and preferred dept
 The legacy pixel atlas remains in the repository for data/assets compatibility. It is not the source of active fish illustrations. The small heart, coin and pearl effects still use legacy icons.
 
 Validation: TypeScript and simulation/reward tests passed. Headless Chrome checked 390px and 1024px layouts, five residents, feeding/persistence, once-per-day growth, pause/resume, focus mode, species detail panel and shop/inventory. Device FPS, native SVG performance and long-running battery use remain unmeasured.
+
+
+## 3D renderer
+
+The 3D body mesh uses ring cross-sections and vertex colors, separate translucent fin surfaces/rays and eyes. Turtle and shrimp have separate anatomical meshes. The scene includes an actual perspective camera, lit geometry, depth fog, plants, rocks and moving particles. Model rotations/paddle movement read the simulation clock. This is an initial code-built mesh set, not a completed GLB/artist rig pipeline or a claim of 20 finished models.
+
+Web 3D/2D switching, selection, feeding, pause and camera buttons were checked in headless Chrome. Android JS/assets export also succeeded. Neither native GL rendering nor frame rate has been verified on a physical device.

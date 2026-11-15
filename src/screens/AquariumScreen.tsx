@@ -5,18 +5,23 @@ import { addMonths, fmtShort, monthKey, monthLabel, shortDate, today } from '../
 import { buyItem, closeMonth, placeItem, renameItem, reviewToday, startCafe, feedFishToday, toggleItem, useStore } from '../store';
 import * as G from '../game/rules';
 import { profileOf } from '../game/species';
+import { AquariumExperience } from '../game/view/AquariumExperience';
+import { waterStatus, habitStreak } from '../game/finance';
+import { GoalsPanel } from '../components/GoalsPanel';
+import { Bestiary } from '../components/Bestiary';
+import { contributed, goalProgress, goalStage } from '../savings';
 import { ZenFish } from '../game/view/ZenArt';
-import { AquariumView, POND_SPOTS } from '../game/view/AquariumView';
+import { POND_SPOTS } from '../game/view/AquariumView';
 import { Icon as Pix } from '../game/view/kit';
 import type { AssetId } from '../game/view/assets';
 import { Button, Card, Icon, ProgressBar, SectionTitle, Text, TextInput, confirm, notify } from '../components/ui';
 
-type Pane = 'pond' | 'missions' | 'shop' | 'inventory';
-const PANES: [Pane, string][] = [['pond', 'Hồ cá'], ['missions', 'Nhiệm vụ'], ['shop', 'Cửa hàng'], ['inventory', 'Kho đồ']];
+type Pane = 'goals' | 'catalog' | 'pond' | 'missions' | 'shop' | 'inventory';
+const PANES: [Pane, string][] = [['pond', 'Hồ cá'], ['goals', 'Mục tiêu'], ['catalog', 'Sổ tay'], ['missions', 'Nhiệm vụ'], ['shop', 'Cửa hàng'], ['inventory', 'Kho đồ']];
 const SPOTS = { ...POND_SPOTS };
 
 export function AquariumScreen({ onAdd, onPlan }: { onAdd: () => void; onPlan: () => void }) {
-  const { game, transactions, plan, budgets } = useStore();
+  const { game, transactions, plan, budgets, goals } = useStore();
   const [name, setName] = useState('');
   const [focus, setFocus] = useState(false);
   const [pane, setPane] = useState<Pane>('pond');
@@ -64,6 +69,14 @@ export function AquariumScreen({ onAdd, onPlan }: { onAdd: () => void; onPlan: (
   const t = today();
   const ctx: G.Ctx = { transactions, plan, budgets };
   const lv = G.level(game.xp);
+  const water = waterStatus(ctx, t);
+  const streak = habitStreak(game, ctx, t);
+  const linkedGoal = naming ? goals.find((g)=>g.fishId===naming.id) : undefined;
+  function feedNow() {
+    const why = feedFishToday();
+    if (why) { notify('Chăm cá',why); return; }
+    setFeedTick((n)=>n+1);
+  }
   const shown = (where: G.Item['where']) => G.ITEMS.filter((i) => i.where === where && game.items.includes(i.id) && !game.hidden.includes(i.id));
   const loggedToday = transactions.some((x) => x.date === t);
   const reviewed = game.reviewed.includes(t);
@@ -92,9 +105,9 @@ export function AquariumScreen({ onAdd, onPlan }: { onAdd: () => void; onPlan: (
   const fishInfo = naming ? G.ITEMS.find((i) => i.id === naming.id) : undefined;
   const doneToday = [has(`first-tx:${t}`), reviewed, has(`budget-day:${t}`)];
   const nextUp = !doneToday[0]
-    ? 'Ghi giao dịch đầu tiên hôm nay để nhận 10 xu và 5 XP.'
+    ? 'Ghi giao dịch đầu tiên hôm nay để nhận 10 xu, 5 XP và 3 phần thức ăn.'
     : !doneToday[1]
-      ? 'Rà soát chi tiêu hôm nay để nhận 10 xu và 5 XP.'
+      ? 'Rà soát hôm nay để nhận 10 xu, 5 XP và 2 phần thức ăn.'
       : !doneToday[2] && limit <= 0
         ? 'Đặt kế hoạch để nhận ngọc khi chi trong ngân sách.'
         : 'Hôm nay bạn đã làm xong phần của mình. Hẹn mai nhé.';
@@ -140,11 +153,17 @@ export function AquariumScreen({ onAdd, onPlan }: { onAdd: () => void; onPlan: (
         ))}
       </View> : null}
 
+      {!focus ? <View style={{flexDirection:'row',flexWrap:'wrap',alignItems:'center',gap:10,marginTop:12,paddingHorizontal:4}}>
+        <Icon name="nutrition-outline" size={19} color={C.primary}/><Text style={{fontSize:13}} accessibilityLabel={`${game.food} phần thức ăn`}>{game.food} phần thức ăn</Text>
+        <Text style={{color:C.sub,fontSize:12}}>· {streak} ngày ghi chép</Text>
+      </View> : null}
       <RewardPop text={pop.text} tick={pop.tick} />
       <Animated.View style={{ opacity: fade }}>
       {pane === 'pond' ? (
         <>
-          <AquariumView
+          <AquariumExperience
+            health={water.health}
+            goalStages={Object.fromEntries(goals.map((g)=>[g.fishId,goalStage(g)]))}
             fish={shown('pond').filter((i) => i.fish).map((i) => i.id)}
             decor={shown('pond').filter((i) => !i.fish).map((i) => i.id)}
             names={Object.fromEntries(shown('pond').map((i) => [i.id, game.names[i.id] || i.name]))}
@@ -156,6 +175,7 @@ export function AquariumScreen({ onAdd, onPlan }: { onAdd: () => void; onPlan: (
             onFish={(id) => { if (!focus) setNaming({ id, text: game.names[id] ?? '' }); }}
           />
           <Reveal item={reveal?.item} tick={reveal?.tick ?? 0} />
+          {!focus ? <Pressable accessibilityRole="button" accessibilityLabel="Xem nhịp chi tiêu" onPress={onPlan} style={[styles.banner,{padding:12}]}><Icon name="water-outline" color={C.primary}/><View style={{flex:1}}><Text style={{fontSize:13,fontWeight:'500'}}>{water.label}</Text><Text style={{color:C.sub,fontSize:12,lineHeight:18,marginTop:3}}>{water.limit>0?`Đã chi ${fmtShort(water.actual)} · Nhịp đến hôm nay ${fmtShort(water.expected)}`:water.hint}</Text></View><Icon name="chevron-forward" size={16} color={C.faint}/></Pressable> : null}
           {!focus && naming && fishInfo ? (
             <Card style={{ marginTop: 10 }}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
@@ -178,26 +198,29 @@ export function AquariumScreen({ onAdd, onPlan }: { onAdd: () => void; onPlan: (
                 <TextInput value={naming.text} onChangeText={(text) => setNaming({ ...naming, text })} placeholder="Đặt tên cho cá" placeholderTextColor={C.faint} maxLength={20} style={[styles.input, { flex: 1, backgroundColor: C.bg }]} accessibilityLabel="Tên của cá" />
                 <Button label="Lưu" onPress={() => { renameItem(naming.id, naming.text); setNaming(null); }} />
               </View>
-              <Button label="Cho ăn" kind="soft" onPress={() => (feedFishToday(), setFeedTick((n) => n + 1))} style={{ marginTop: 10 }} />
+              {linkedGoal ? <View style={{gap:8,marginTop:12}}><Text style={{fontWeight:'500'}}>{linkedGoal.name} · {Math.round(goalProgress(linkedGoal)*100)}%</Text><ProgressBar value={goalProgress(linkedGoal)}/><Text style={{fontSize:12,color:C.sub}}>Đã góp {fmtShort(contributed(linkedGoal))} / {fmtShort(linkedGoal.target)}</Text><Button label="Xem mục tiêu & góp thêm" kind="soft" onPress={()=>setPane('goals')}/></View> : null}
+              <Button label="Cho ăn" kind="soft" onPress={feedNow} style={{ marginTop: 10 }} />
             </Card>
           ) : !focus ? (
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 10 }}>
               <Text style={{ flex: 1, color: C.sub, fontSize: 12.5, lineHeight: 18, paddingHorizontal: 4 }}>Chạm vào cá để xem và đặt tên. Chạm vào nước để tạo sóng.</Text>
-              <Button label="Cho cá ăn" kind="soft" onPress={() => (feedFishToday(), setFeedTick((n) => n + 1))} />
+              <Button label="Cho cá ăn" kind="soft" onPress={feedNow} />
             </View>
           ) : null}
-          {!focus ? <><Text style={{ color: C.sub, fontSize: 12, marginTop: 12, textAlign: 'center' }}>Cho ăn mỗi ngày để cá lớn lên · Nghỉ vài hôm cũng không mất cá.</Text>
+          {!focus ? <><Text style={{ color: C.sub, fontSize: 12, marginTop: 12, textAlign: 'center' }}>Mỗi lần cho ăn dùng 1 phần · Ghi chép hoặc rà soát để nhận thêm. Nghỉ vài hôm cũng không mất cá.</Text>
           {banner}</> : null}
         </>
       ) : null}
 
+      {pane === 'goals' ? <GoalsPanel /> : null}
+      {pane === 'catalog' ? <Bestiary /> : null}
       {pane === 'missions' ? (
         <>
           <SectionTitle>Hôm nay</SectionTitle>
           <Card style={{ paddingVertical: 4 }}>
-            <Mission done={has(`first-tx:${t}`)} title="Ghi giao dịch đầu tiên" reward="10 xu + 5 XP" action={loggedToday ? undefined : ['Ghi', onAdd]} />
+            <Mission done={has(`first-tx:${t}`)} title="Ghi giao dịch đầu tiên" reward="10 xu + 5 XP + 3 thức ăn" action={loggedToday ? undefined : ['Ghi', onAdd]} />
             <View style={styles.sep} />
-            <Mission done={reviewed} title={loggedToday ? 'Rà soát giao dịch hôm nay' : 'Xác nhận hôm nay không phát sinh'} reward="10 xu + 5 XP" action={reviewed ? undefined : [loggedToday ? 'Đã rà soát' : 'Xác nhận', reviewToday]} />
+            <Mission done={reviewed} title={loggedToday ? 'Rà soát giao dịch hôm nay' : 'Xác nhận hôm nay không phát sinh'} reward="10 xu + 5 XP + 2 thức ăn" action={reviewed ? undefined : [loggedToday ? 'Đã rà soát' : 'Xác nhận', reviewToday]} />
             <View style={styles.sep} />
             {limit > 0 ? (
               <Mission
@@ -240,7 +263,7 @@ export function AquariumScreen({ onAdd, onPlan }: { onAdd: () => void; onPlan: (
                     <Text style={{ fontSize: 12, color: C.sub, marginTop: 2 }}>{shortDate(e.at)}</Text>
                   </View>
                   <Text style={{ fontSize: 13.5, fontWeight: '500', color: e.coins + e.pearls + e.eggs < 0 ? C.sub : C.primary }}>
-                    {(['coins', 'xp', 'pearls', 'eggs'] as const).filter((k) => e[k]).map((k) => `${e[k] > 0 ? '+' : ''}${e[k]} ${k === 'xp' ? 'XP' : G.UNIT[k]}`).join(' · ')}
+                    {(['coins', 'xp', 'pearls', 'eggs', 'food'] as const).filter((k) => e[k]).map((k) => `${(e[k] ?? 0) > 0 ? '+' : ''}${e[k]} ${k === 'food' ? 'thức ăn' : k === 'xp' ? 'XP' : G.UNIT[k]}`).join(' · ')}
                   </Text>
                 </View>
               </View>
@@ -394,8 +417,8 @@ const styles = themed(() => StyleSheet.create({
   reveal: { position: 'absolute', alignSelf: 'center', top: 44, zIndex: 2, alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.88)', borderRadius: R.lg, paddingHorizontal: 18, paddingVertical: 12 },
   banner: { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: C.card, borderRadius: R.lg, padding: 16, marginTop: 12 },
   input: { backgroundColor: C.card, borderRadius: R.md, paddingHorizontal: 14, paddingVertical: 13, fontSize: 15 },
-  segment: { flexDirection: 'row', backgroundColor: C.line, borderRadius: R.md, padding: 4, marginTop: 16 },
-  segItem: { flex: 1, alignItems: 'center', justifyContent: 'center', minHeight: 40, borderRadius: R.md - 4 },
+  segment: { flexDirection: 'row', flexWrap: 'wrap', rowGap: 4, backgroundColor: C.line, borderRadius: R.md, padding: 4, marginTop: 16 },
+  segItem: { flexGrow: 1, flexBasis: '30%', alignItems: 'center', justifyContent: 'center', minHeight: 40, borderRadius: R.md - 4 },
   item: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 12 },
   sep: { height: StyleSheet.hairlineWidth, backgroundColor: C.line },
 }));

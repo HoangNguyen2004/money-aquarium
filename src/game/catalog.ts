@@ -1,0 +1,23 @@
+export type Rarity = 'Common' | 'Rare' | 'Epic' | 'Legendary' | 'Event';
+export const CATALOG: { id: string; name: string; rarity: Rarity; archetype: string; condition: string; playable: boolean }[] = [
+  {id:'fish-neon',name:'Neon Tetra',rarity:'Common',archetype:'Torpedo',condition:'Cư dân chào mừng trong đợt mở rộng tiếp theo',playable:false},
+  {id:'fish-guppy',name:'Cá bảy màu',rarity:'Common',archetype:'Flowing fin',condition:'Dự kiến: 3 ngày ghi chép hoặc xác nhận không giao dịch',playable:false},
+  {id:'fish-clown',name:'Cá hề',rarity:'Common',archetype:'Torpedo',condition:'Đổi 1 trứng ở Cửa hàng',playable:true},
+  {id:'fish-gold',name:'Cá vàng đuôi voan',rarity:'Common',archetype:'Round',condition:'Miễn phí khi tạo hồ',playable:true},
+  {id:'fish-discus',name:'Cá dĩa xanh',rarity:'Common',archetype:'Flat disc',condition:'Dự kiến: hoàn thành kế hoạch tuần',playable:false},
+  {id:'fish-angel',name:'Cá thần tiên',rarity:'Rare',archetype:'Flat disc',condition:'Dự kiến: 14 ngày rà soát',playable:false},
+  {id:'fish-betta',name:'Cá chọi Betta',rarity:'Rare',archetype:'Flowing fin',condition:'Dự kiến: quỹ tự thưởng được xác nhận',playable:false},
+  {id:'fish-puffer',name:'Cá nóc đốm',rarity:'Rare',archetype:'Round',condition:'Cấp 2 · 8 ngọc ở Cửa hàng',playable:true},
+  {id:'fish-ray',name:'Cá đuối xanh',rarity:'Rare',archetype:'Wing flapper',condition:'Dự kiến: mốc tiến độ mục tiêu cá nhân',playable:false},
+  {id:'fish-seahorse',name:'Cá ngựa vàng',rarity:'Rare',archetype:'Vertical curve',condition:'Dự kiến: rà soát ngân sách một tháng',playable:false},
+  {id:'fish-koi',name:'Koi Kohaku',rarity:'Epic',archetype:'Torpedo',condition:'Dự kiến: mốc tích lũy theo mục tiêu',playable:false},
+  {id:'fish-turtle',name:'Rùa tai vàng',rarity:'Epic',archetype:'Wing flapper',condition:'Cấp 4 · 15 ngọc ở Cửa hàng; giữ loài cũ của bạn',playable:true},
+  {id:'fish-angler',name:'Cá lồng đèn',rarity:'Epic',archetype:'Round',condition:'Dự kiến: soát lại giao dịch buổi tối',playable:false},
+  {id:'fish-jelly',name:'Sứa mặt trăng',rarity:'Epic',archetype:'Jelly pulse',condition:'Dự kiến: mốc chăm sóc và mục tiêu',playable:false},
+  {id:'fish-sword',name:'Cá kiếm',rarity:'Epic',archetype:'Torpedo',condition:'Dự kiến: xác nhận tất toán khoản nợ',playable:false},
+  {id:'fish-manta',name:'Manta tinh vân',rarity:'Legendary',archetype:'Wing flapper',condition:'Dự kiến: tiến độ mục tiêu dài hạn',playable:false},
+  {id:'fish-arowana',name:'Kim long',rarity:'Legendary',archetype:'Serpentine',condition:'Dự kiến: thành tựu cải thiện cá nhân',playable:false},
+  {id:'fish-whale',name:'Cá voi lưng gù',rarity:'Legendary',archetype:'Giant',condition:'Dự kiến: hoàn thành mục tiêu dài hạn',playable:false},
+  {id:'fish-narwhal',name:'Kỳ lân biển',rarity:'Legendary',archetype:'Torpedo',condition:'Dự kiến: 100 ngày tích lũy thói quen',playable:false},
+  {id:'fish-hammerhead',name:'Mập búa tín dụng',rarity:'Event',archetype:'Warning',condition:'Ý tưởng cảnh báo hóa đơn; không phải phần thưởng ngẫu nhiên',playable:false},
+];

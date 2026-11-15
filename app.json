@@ -24,7 +24,8 @@
           "cameraPermission": "Cho phép dùng camera để chụp hóa đơn."
         }
       ],
-      "expo-font"
+      "expo-font",
+      "expo-asset"
     ]
   }
 }

@@ -15,9 +15,11 @@ App quản lý chi tiêu cá nhân cho iPhone và Android (Expo / React Native).
 
 Hồ cá có 5 cư dân với hình minh họa và chuyển động riêng: cá vàng đuôi voan, cá hề, cá nóc đốm, tép anh đào và rùa tai vàng. Có cho ăn, đặt tên, tăng trưởng qua các ngày chăm sóc, trang trí, cửa hàng/kho và chế độ Chỉ ngắm.
 
-![Các cư dân trong hồ](shots/aquarium-species.png)
+![Hồ cá 3D](shots/aquarium-390.png)
 
-Đây là bản thử nghiệm lưu dữ liệu cục bộ. Food wallet, rương, phối giống và đồng bộ tài khoản chưa được triển khai. Xem [đặc tả và bảng đối chiếu](docs/Money_Aquarium_Functional_Spec_v1.1.md).
+Bản mới có hồ 3D tương tác (kèm chế độ 2D), ví thức ăn thưởng từ ghi chép/rà soát, nhịp chi tiêu và mục tiêu tiết kiệm gắn với cư dân. Sổ tay có 20 mục; 5 cư dân hiện có được dựng mesh, các loài chưa làm được ghi rõ Sắp đến.
+
+Đây là bản thử nghiệm lưu dữ liệu cục bộ. Rương, phối giống và đồng bộ tài khoản chưa được triển khai. Khoản góp do người dùng xác nhận, app không tự chuyển tiền. Xem [đặc tả và bảng đối chiếu](docs/Money_Aquarium_Functional_Spec_v1.1.md).
 
 ## Cài đặt và chạy
 
@@ -28,7 +30,7 @@ npm ci
 npm run web
 ```
 
-App không cần API key để chạy các chức năng cơ bản và hồ cá.
+App không cần API key để chạy các chức năng cơ bản và hồ cá. Xem [phạm vi cập nhật 15/11](docs/Financial_Aquarium_Implementation_2026-11-15.md).
 
 ## Chạy trên điện thoại
 
@@ -41,7 +43,7 @@ App không cần API key để chạy các chức năng cơ bản và hồ cá.
 
 3. Quét mã QR hiện trong terminal (iPhone: dùng Camera; Android: quét trong Expo Go).
 
-Chạy thử trên trình duyệt: `npm run web`.
+Chạy thử trên trình duyệt: `npm run web`. Bản 3D dùng thêm `expo-gl`/`expo-asset`; bản native cũ cần build lại (`npx expo run:android` hoặc `npx expo run:ios`) để có các module mới. Chưa kiểm chứng hiệu năng trên điện thoại thật.
 
 ## Bật tính năng AI
 
@@ -93,4 +95,4 @@ npm run build:demo
 node scripts/check-aquarium-web.mjs
 ```
 
-Các hình minh họa cá hiện tại được vẽ bằng mã SVG; xem [manifest hình ảnh](docs/aquarium-art-manifest.md).
+Bản 3D dùng mesh dựng bằng mã, bản 2D dự phòng dùng SVG; xem [manifest hình ảnh](docs/aquarium-art-manifest.md).

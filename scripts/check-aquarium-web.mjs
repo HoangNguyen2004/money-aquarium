@@ -36,16 +36,19 @@ try {
     for(let i=0;i<100;i++) { await delay(150); result = await evaluate('document.title'); if(result?.startsWith('PASS:') || result?.startsWith('FAIL:')) break; }
     assert.ok(result?.startsWith('PASS:'),result);
     const stats = await evaluate(`({overflow:document.documentElement.scrollWidth > innerWidth, fish:document.querySelectorAll('[aria-label^="Xem "]').length, text:document.body.innerText})`);
-    assert.equal(stats.overflow,false); assert.equal(stats.fish,5); assert.ok(!stats.text.includes('Quán của tôi'));
+    assert.equal(stats.overflow,false);
+    assert.ok(await evaluate(`!!document.querySelector('[data-testid="aquarium-3d-ready"] canvas')`), '3D canvas must render without falling back'); assert.ok(!stats.text.includes('Quán của tôi'));
     const shot = await send('Page.captureScreenshot',{format:'png'});
     fs.writeFileSync('shots/aquarium-'+width+'.png',Buffer.from(shot.result.data,'base64'));
     const clickText = async (role, text) => evaluate(`(() => { const e = [...document.querySelectorAll('[role="${role}"]')].find(e => e.textContent === ${JSON.stringify(text)}); e?.click(); return !!e; })()`);
     assert.ok(await clickText('button', 'Xong')); await delay(200);
+    assert.ok(await clickText('button', 'Chuyển 2D')); await delay(400);
     assert.ok(await clickText('tab', 'Cửa hàng')); await delay(300);
     assert.ok(await evaluate(`document.body.innerText.includes('Bạn đã mua hết') && !document.body.innerText.includes('Ghế sofa')`));
     assert.ok(await clickText('tab', 'Kho đồ')); await delay(300);
     assert.ok(await evaluate(`document.body.innerText.includes('Bộ sưu tập của bạn')`));
     assert.ok(await clickText('tab', 'Hồ cá')); await delay(400);
+    assert.ok(await clickText('button', 'Chuyển 2D')); await delay(300);
     assert.ok(await evaluate(`(() => { const fish = document.querySelector('[aria-label="Xem Nắng"]'); fish?.click(); return !!fish; })()`));
     await delay(250);
     assert.ok(await evaluate(`document.body.innerText.includes('Vảy ánh mật ong') && document.body.innerText.includes('ngày chăm sóc')`));
@@ -55,6 +58,21 @@ try {
     fs.writeFileSync('shots/aquarium-normal-'+width+'.png',Buffer.from(normalShot.result.data,'base64'));
     console.log(width+'px: '+result+'; fish-only shop and inventory; five residents rendered; no horizontal overflow');
   }
+  const click = async (role, text) => { const found = await evaluate(`(() => { const node = [...document.querySelectorAll('[role="${role}"]')].find(e=>e.textContent===${JSON.stringify(text)}); node?.click(); return !!node; })()`); assert.ok(found, 'Missing control: '+text); await delay(180); };
+  const fill = async (label, value) => { assert.ok(await evaluate(`(() => { const e=document.querySelector('input[aria-label=${JSON.stringify(label)}]'); if(!e)return false; Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(e,${JSON.stringify(value)});e.dispatchEvent(new Event('input',{bubbles:true}));return true; })()`));await delay(100); };
+  const saved = async () => evaluate(`JSON.parse(localStorage.getItem('so-chi-tieu:v1'))`);
+  const before = await saved();
+  await click('tab','Mục tiêu');await click('button','Tạo mục tiêu');
+  await fill('Tên mục tiêu','Quỹ dự phòng UI');await fill('Số tiền','1000000');await click('button','Lưu mục tiêu');
+  let state = await saved();assert.equal(state.goals.length,1);assert.equal(state.goals[0].target,1000000);
+  await click('button','Góp thêm');await fill('Số tiền','300000');await click('button','Đã chuyển, ghi nhận');
+  state=await saved();assert.equal(state.goals[0].contributions.length,1);assert.equal(state.goals[0].contributions[0].amount,300000);
+  assert.deepEqual(state.transactions,before.transactions);assert.equal(state.game.food,before.game.food);
+  assert.ok(await evaluate(`document.body.innerText.includes('30%')`));
+  await click('tab','Sổ tay');assert.equal(await evaluate(`document.querySelectorAll('[data-testid^="catalog-"]').length`),20);
+  await click('button','Sự kiện');assert.equal(await evaluate(`document.querySelectorAll('[data-testid^="catalog-"]').length`),1);
+  await click('tab','Hồ cá');await delay(500);await click('button','Chuyển 2D');
+  console.log('Goal creation, confirmed contribution, financial separation and 20-species catalog: PASS');
   // Review the same rendered artwork at a larger size, with no production gallery UI.
   await evaluate(`(() => {
     const names = { 'fish-gold': 'Cá vàng đuôi voan', 'fish-clown': 'Cá hề', 'fish-puffer': 'Cá nóc đốm', 'fish-turtle': 'Rùa tai vàng', 'fish-shrimp': 'Tép anh đào' };

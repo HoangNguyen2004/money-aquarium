@@ -5,10 +5,13 @@
     "@expo/metro-runtime": "~58.0.17",
     "@expo/vector-icons": "^15.0.2",
     "@react-native-async-storage/async-storage": "2.2.0",
+    "@react-three/fiber": "^9.8.2",
     "@types/react": "~19.3.0",
     "expo": "^58.0.23",
+    "expo-asset": "~58.0.21",
     "expo-file-system": "~58.0.13",
     "expo-font": "~58.0.12",
+    "expo-gl": "~58.0.4",
     "expo-image-picker": "~58.0.10",
     "expo-secure-store": "~58.0.2",
     "expo-status-bar": "~58.0.4",
@@ -19,6 +22,7 @@
     "react-native-safe-area-context": "~5.11.1",
     "react-native-svg": "15.16.0",
     "react-native-web": "^0.21.4",
+    "three": "^0.187.0",
     "typescript": "~6.0.3",
     "zod": "^4.6.7"
   },
@@ -29,10 +33,13 @@
     "start": "expo start",
     "web": "expo start --web",
     "typecheck": "tsc --noEmit",
-    "test": "tsc src/receipt.test.ts src/game/rules.test.ts src/game/sim/fish.test.ts src/game/sim/cafe.test.ts --ignoreConfig --rootDir src --outDir node_modules/.cache/tests --module commonjs --target es2022 --skipLibCheck --strict --types node && node node_modules/.cache/tests/receipt.test.js && node node_modules/.cache/tests/game/rules.test.js && node node_modules/.cache/tests/game/sim/fish.test.js && node node_modules/.cache/tests/game/sim/cafe.test.js",
+    "test": "tsc src/receipt.test.ts src/game/finance.test.ts src/game/rules.test.ts src/game/sim/fish.test.ts src/game/sim/cafe.test.ts --ignoreConfig --rootDir src --outDir node_modules/.cache/tests --module commonjs --target es2022 --skipLibCheck --strict --types node && node node_modules/.cache/tests/receipt.test.js && node node_modules/.cache/tests/game/rules.test.js && node node_modules/.cache/tests/game/sim/fish.test.js && node node_modules/.cache/tests/game/sim/cafe.test.js && node node_modules/.cache/tests/game/finance.test.js",
     "assets": "node scripts/make-game-assets.mjs",
     "build:web": "expo export --platform web",
     "build:demo": "npm run build:web && node scripts/prepare-aquarium-preview.mjs"
   },
-  "private": true
+  "private": true,
+  "devDependencies": {
+    "@types/three": "^0.187.0"
+  }
 }

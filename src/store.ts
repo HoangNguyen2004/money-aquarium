@@ -7,10 +7,12 @@ import { addDays, addMonths, monthKey, today, uid } from './format';
 import { hasApiKey } from './secrets';
 import { applyTheme } from './theme';
 import * as G from './game/rules';
+import { contribute, createGoal } from './savings';
 
 const KEY = 'so-chi-tieu:v1';
 
 let state: AppState = {
+  goals: [],
   ready: false,
   transactions: [],
   budgets: {},
@@ -30,10 +32,10 @@ function set(patch: Partial<AppState>, persist = true) {
   if (patch.transactions) state.game = G.settle(state.game, state.transactions, today());
   listeners.forEach((l) => l());
   if (persist && state.ready) {
-    const { transactions, budgets, plan, chat, themeId, game } = state;
+    const { transactions, budgets, plan, chat, themeId, game, goals } = state;
     // Bản web không lưu ảnh nền: data URI có thể làm đầy bộ nhớ trình duyệt và chặn luôn việc lưu giao dịch.
     const background = Platform.OS === 'web' ? null : state.background;
-    AsyncStorage.setItem(KEY, JSON.stringify({ transactions, budgets, plan, chat: chat.slice(-80), themeId, background, game })).catch(
+    AsyncStorage.setItem(KEY, JSON.stringify({ transactions, budgets, plan, chat: chat.slice(-80), themeId, background, game, goals })).catch(
       () => {},
     );
   }
@@ -68,13 +70,14 @@ export async function loadStore() {
   set(
     {
       ready: true,
+      goals: Array.isArray(saved.goals) ? saved.goals : [],
       transactions: Array.isArray(saved.transactions) ? saved.transactions : [],
       budgets: saved.budgets ?? {},
       plan: { income: 0, savings: 0, ...(saved.plan ?? {}) },
       chat: Array.isArray(saved.chat) ? saved.chat : [],
       hasKey,
       themeId,
-      game: { ...G.newGame(), ...(saved.game ?? {}) },
+      game: G.migrateGame(saved.game),
       background: typeof saved.background === 'string' ? saved.background : null,
     },
     false,
@@ -200,7 +203,7 @@ export function setHasKey(hasKey: boolean) {
 }
 
 export function clearAll() {
-  set({ transactions: [], budgets: {}, plan: { income: 0, savings: 0 }, chat: [], game: { ...G.newGame(), enabled: state.game.enabled } });
+  set({ goals: [], transactions: [], budgets: {}, plan: { income: 0, savings: 0 }, chat: [], game: { ...G.newGame(), enabled: state.game.enabled } });
 }
 
 /** Dữ liệu mẫu cho 2 tháng gần nhất để xem thử báo cáo. */
@@ -250,6 +253,41 @@ export function loadSampleData() {
   });
 }
 
-export function feedFishToday() {
-  set({ game: G.careForFish(state.game, today()) });
+export function feedFishToday(): string | null {
+  const next = G.feedAquarium(state.game, today());
+  if (typeof next === 'string') return next;
+  set({ game: next });
+  return null;
+}
+
+export function addSavingGoal(name: string, target: number, fishId: string, deadline: string): string | null {
+  if (!state.game.items.includes(fishId)) return 'Bạn chưa sở hữu cư dân này.';
+  if (state.goals.some((g) => g.fishId === fishId)) return 'Cư dân này đã đồng hành cùng một mục tiêu khác.';
+  const goal = createGoal(uid(), name, target, fishId, deadline);
+  if (typeof goal === 'string') return goal;
+  set({ goals: [...state.goals, goal] });
+  return null;
+}
+
+export function contributeToGoal(goalId: string, amount: number, eventId = uid()): string | null {
+  const goal = state.goals.find((g) => g.id === goalId);
+  if (!goal) return 'Không tìm thấy mục tiêu.';
+  const next = contribute(goal, eventId, amount, today());
+  if (typeof next === 'string') return next;
+  if (next !== goal) set({ goals: state.goals.map((g) => g.id === goalId ? next : g) });
+  return null;
+}
+
+export function updateSavingGoal(id: string, name: string, target: number, fishId: string, deadline: string): string | null {
+  const old = state.goals.find((g) => g.id === id);
+  if (!old) return 'Không tìm thấy mục tiêu.';
+  if (!state.game.items.includes(fishId) || state.goals.some((g) => g.id !== id && g.fishId === fishId)) return 'Hãy chọn một cư dân chưa gắn mục tiêu.';
+  const goal = createGoal(id, name, target, fishId, deadline);
+  if (typeof goal === 'string') return goal;
+  set({ goals: state.goals.map((g) => g.id === id ? { ...goal, contributions: old.contributions } : g) });
+  return null;
+}
+
+export function removeGoalContribution(goalId: string, entryId: string) {
+  set({ goals: state.goals.map((g) => g.id === goalId ? { ...g, contributions: g.contributions.filter((e) => e.id !== entryId) } : g) });
 }

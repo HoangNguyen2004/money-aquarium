@@ -52,4 +52,11 @@ const openScene = `const demoTimer = setInterval(() => {
 }, 150);
 setTimeout(() => clearInterval(demoTimer), 15000);
 `;
-fs.writeFileSync('dist/aquarium-demo.html', preview.slice(0, from) + openScene + preview.slice(to));
+const demoFixture = {
+  ...fixture,
+  game: { ...fixture.game, food: 12 },
+  goals: [{ id: 'demo-reserve', name: 'Quỹ dự phòng', target: 3000000, fishId: 'fish-gold', deadline: '2027-01-01', contributions: [{ id: 'demo-contribution', amount: 900000, date: '2026-11-15' }] }],
+};
+const demoHtml = (preview.slice(0, from) + openScene + preview.slice(to))
+  .replace(JSON.stringify(JSON.stringify(fixture)), JSON.stringify(JSON.stringify(demoFixture)));
+fs.writeFileSync('dist/aquarium-demo.html', demoHtml);

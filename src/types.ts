@@ -27,7 +27,17 @@ export interface ChatMsg {
   imageUri?: string;
 }
 
+export interface SavingGoal {
+  id: string;
+  name: string;
+  target: number;
+  deadline: string;
+  fishId: string;
+  contributions: { id: string; amount: number; date: string }[];
+}
+
 export interface AppState {
+  goals: SavingGoal[];
   ready: boolean;
   transactions: Transaction[];
   budgets: Record<string, number>; // hạn mức chi theo danh mục / tháng
