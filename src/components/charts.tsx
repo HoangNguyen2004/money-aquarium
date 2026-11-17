@@ -1,14 +1,15 @@
 import React from 'react';
 import { View } from 'react-native';
 import Svg, { Circle, G } from 'react-native-svg';
-import { Text } from './ui';
+import { DISPLAY, Text } from './ui';
 import { C } from '../theme';
 import { cat } from '../categories';
 import { fmtShort } from '../format';
 import type { CatStat } from '../report';
 
-export function Donut({ data, total, size = 168 }: { data: CatStat[]; total: number; size?: number }) {
-  const stroke = 22;
+export function Donut({ data, size = 190 }: { data: CatStat[]; size?: number }) {
+  const stroke = 28;
+  const top = data[0];
   const r = (size - stroke) / 2;
   const circ = 2 * Math.PI * r;
   const gap = data.length > 1 ? 3 : 0;
@@ -38,8 +39,13 @@ export function Donut({ data, total, size = 168 }: { data: CatStat[]; total: num
           })}
         </G>
       </Svg>
-      <Text style={{ fontSize: 12, color: C.sub }}>Tổng chi</Text>
-      <Text style={{ fontSize: 22, fontWeight: '500', color: C.ink }}>{fmtShort(total)}</Text>
+      {top ? (
+        <>
+          <Text style={{ fontSize: 11, color: C.sub }}>Lớn nhất</Text>
+          <Text style={{ fontFamily: DISPLAY, fontSize: 28, fontWeight: '700', color: C.ink }}>{Math.round(top.pct * 100)}%</Text>
+          <Text style={{ fontSize: 12, fontWeight: '600', color: cat(top.id).color }}>{cat(top.id).name}</Text>
+        </>
+      ) : null}
     </View>
   );
 }
@@ -58,7 +64,7 @@ export function DayBars({ values, highlight }: { values: number[]; highlight?: n
               flex: 1,
               height: v > 0 ? Math.max(3, (v / max) * H) : 2,
               borderRadius: 3,
-              backgroundColor: v === 0 ? C.line : i === highlight ? C.primary : C.primaryMid,
+              backgroundColor: v === 0 ? C.line : i === highlight ? C.primary : C.accent,
             }}
           />
         ))}

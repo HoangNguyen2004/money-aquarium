@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Image, Pressable, StyleSheet, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { Geist_400Regular, Geist_500Medium, useFonts } from '@expo-google-fonts/geist';
+import { BeVietnamPro_400Regular, BeVietnamPro_500Medium, BeVietnamPro_600SemiBold, BeVietnamPro_700Bold } from '@expo-google-fonts/be-vietnam-pro';
+import { PlusJakartaSans_600SemiBold, PlusJakartaSans_700Bold, PlusJakartaSans_800ExtraBold } from '@expo-google-fonts/plus-jakarta-sans';
+import { useFonts } from 'expo-font';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { C, themed } from './src/theme';
-import { monthKey, today } from './src/format';
+import { monthKey, monthLabel, today } from './src/format';
+import { habitStreak } from './src/game/finance';
 import { loadStore, useStore } from './src/store';
 import { backgroundUri } from './src/images';
 import type { Transaction } from './src/types';
-import { Icon, Text } from './src/components/ui';
+import { DISPLAY, Icon, Text } from './src/components/ui';
 import { TransactionForm, type ScanSource } from './src/components/TransactionForm';
 import { SettingsModal } from './src/components/SettingsModal';
 import { HomeScreen } from './src/screens/HomeScreen';
@@ -21,15 +24,15 @@ type Tab = 'home' | 'report' | 'plan' | 'aquarium';
 
 const TABS: { id: Tab; label: string; icon: string }[] = [
   { id: 'home', label: 'Tổng quan', icon: 'wallet' },
-  { id: 'report', label: 'Báo cáo', icon: 'pie-chart' },
   { id: 'plan', label: 'Kế hoạch', icon: 'flag' },
+  { id: 'report', label: 'Báo cáo', icon: 'pie-chart' },
   { id: 'aquarium', label: 'Hồ cá', icon: 'fish' },
 ];
 
 function Main() {
   const insets = useSafeAreaInsets();
-  const { ready, background, game } = useStore();
-  const [fontsLoaded, fontsError] = useFonts({ Geist_400Regular, Geist_500Medium });
+  const { ready, background, game, transactions, plan, budgets } = useStore();
+  const [fontsLoaded, fontsError] = useFonts({ BeVietnamPro_400Regular, BeVietnamPro_500Medium, BeVietnamPro_600SemiBold, BeVietnamPro_700Bold, PlusJakartaSans_600SemiBold, PlusJakartaSans_700Bold, PlusJakartaSans_800ExtraBold });
   const [tab, setTab] = useState<Tab>('home');
   // Trợ lý không còn là tab: dấu cộng mở nó phủ lên tab đang xem.
   const [bot, setBot] = useState(false);
@@ -50,6 +53,18 @@ function Main() {
     );
   }
 
+  const streak = habitStreak(game, { transactions, plan, budgets }, today());
+  const visible = TABS.filter((t) => t.id !== 'aquarium' || game.enabled);
+  const tabButton = (t: (typeof TABS)[number]) => {
+    const on = t.id === tab && !bot;
+    return (
+      <Pressable key={t.id} style={styles.tab} onPress={() => { setTab(t.id); setBot(false); }} accessibilityRole="tab" accessibilityLabel={t.label}>
+        <Icon name={on ? t.icon : `${t.icon}-outline`} size={24} color={on ? C.primary : C.sub} />
+        <Text style={{ fontSize: 11, fontWeight: on ? '700' : '500', color: on ? C.primary : C.sub, marginTop: 3 }}>{t.label}</Text>
+      </Pressable>
+    );
+  };
+
   const openAdd = (scan?: ScanSource) => setForm({ open: true, editing: null, scan: scan ?? null });
   const openEdit = (tx: Transaction) => setForm({ open: true, editing: tx, scan: null });
 
@@ -63,30 +78,41 @@ function Main() {
         </>
       ) : null}
       <StatusBar style={C.dark ? 'light' : 'dark'} />
+      {!bot ? (
+        <View style={styles.header}>
+          <View style={styles.headerLeft}>
+            <View style={styles.pill}>
+              <Icon name="calendar-outline" size={16} color={C.primary} />
+              <Text style={styles.pillText}>{monthLabel(month)}</Text>
+            </View>
+            {game.enabled && streak > 0 ? (
+              <View style={[styles.pill, { backgroundColor: C.warnSoft, boxShadow: 'none' as never }]}>
+                <Icon name="flame" size={15} color={C.amber} />
+                <Text style={[styles.pillText, { fontSize: 12, color: C.warn }]}>{streak} ngày</Text>
+              </View>
+            ) : null}
+          </View>
+          <Pressable onPress={() => setSettings(true)} hitSlop={10} style={styles.gear} accessibilityLabel="Cài đặt">
+            <Icon name="settings-outline" size={22} color={C.sub} />
+          </Pressable>
+        </View>
+      ) : null}
       <View style={{ flex: 1 }}>
         {bot ? <BotScreen onEdit={openEdit} onClose={() => setBot(false)} /> : null}
-        {!bot && tab === 'home' ? <HomeScreen month={month} onMonth={setMonth} onAdd={openAdd} onEdit={openEdit} onSettings={() => setSettings(true)} onCafe={() => setTab('aquarium')} /> : null}
+        {!bot && tab === 'home' ? <HomeScreen month={month} onMonth={setMonth} onAdd={openAdd} onEdit={openEdit} onCafe={() => setTab('aquarium')} /> : null}
         {!bot && tab === 'report' ? <ReportScreen month={month} onMonth={setMonth} /> : null}
         {!bot && tab === 'aquarium' && game.enabled ? <AquariumScreen onAdd={() => setBot(true)} onPlan={() => setTab('plan')} /> : null}
         {!bot && tab === 'plan' ? <PlanScreen /> : null}
       </View>
 
-      {!bot && tab !== 'aquarium' ? (
-        <Pressable style={[styles.fab, { bottom: 74 + insets.bottom }]} onPress={() => setBot(true)} accessibilityLabel="Mở trợ lý để ghi giao dịch">
-          <Icon name="add" size={30} color="#fff" />
-        </Pressable>
-      ) : null}
-
       <View style={[styles.tabs, { paddingBottom: Math.max(insets.bottom, 8) }]}>
-        {TABS.filter((t) => t.id !== 'aquarium' || game.enabled).map((t) => {
-          const on = t.id === tab && !bot;
-          return (
-            <Pressable key={t.id} style={styles.tab} onPress={() => { setTab(t.id); setBot(false); }} accessibilityRole="tab" accessibilityLabel={t.label}>
-              <Icon name={on ? t.icon : `${t.icon}-outline`} size={22} color={on ? C.primary : C.sub} />
-              <Text style={{ fontSize: 11, fontWeight: '500', color: on ? C.primary : C.sub, marginTop: 3 }}>{t.label}</Text>
-            </Pressable>
-          );
-        })}
+        {visible.slice(0, 2).map(tabButton)}
+        <View style={styles.tab}>
+          <Pressable style={styles.fab} onPress={() => setBot(true)} accessibilityRole="button" accessibilityLabel="Mở trợ lý để ghi giao dịch">
+            <Icon name="add" size={32} color="#fff" />
+          </Pressable>
+        </View>
+        {visible.slice(2).map(tabButton)}
       </View>
 
       <TransactionForm
@@ -110,16 +136,21 @@ export default function App() {
 
 const styles = themed(() => StyleSheet.create({
   root: { flex: 1, backgroundColor: C.bg },
-  tabs: { flexDirection: 'row', backgroundColor: C.card, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: C.line, paddingTop: 8 },
-  tab: { flex: 1, alignItems: 'center', minHeight: 44, justifyContent: 'center' },
+  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, height: 56 },
+  headerLeft: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  pill: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: C.card, borderRadius: 999, paddingHorizontal: 12, paddingVertical: 7, boxShadow: `0 2px 8px ${C.shadow}` },
+  pillText: { fontFamily: DISPLAY, fontSize: 13, fontWeight: '600', color: C.ink },
+  gear: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
+  tabs: { flexDirection: 'row', alignItems: 'center', backgroundColor: C.card, paddingTop: 10, boxShadow: `0 -4px 24px ${C.shadow}`, borderTopLeftRadius: 24, borderTopRightRadius: 24 },
+  tab: { flex: 1, alignItems: 'center', minHeight: 48, justifyContent: 'center' },
   fab: {
-    position: 'absolute',
-    right: 18,
-    width: 58,
-    height: 58,
-    borderRadius: 29,
-    backgroundColor: C.primary,
+    marginTop: -34,
+    width: 62,
+    height: 62,
+    borderRadius: 31,
+    backgroundColor: C.accent,
     alignItems: 'center',
     justifyContent: 'center',
+    boxShadow: `0 10px 24px -4px ${C.accent}66`,
   },
 }));

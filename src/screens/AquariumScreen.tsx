@@ -15,7 +15,7 @@ import { ZenFish } from '../game/view/ZenArt';
 import { POND_SPOTS } from '../game/view/AquariumView';
 import { Icon as Pix } from '../game/view/kit';
 import type { AssetId } from '../game/view/assets';
-import { Button, Card, Icon, ProgressBar, SectionTitle, Text, TextInput, confirm, notify } from '../components/ui';
+import { Button, Card, DISPLAY, Icon, ProgressBar, SectionTitle, Text, TextInput, confirm, notify } from '../components/ui';
 
 type Pane = 'studio' | 'goals' | 'catalog' | 'pond' | 'missions' | 'shop' | 'inventory';
 const PANES: [Pane, string][] = [['pond', 'Hồ cá'], ['studio', 'Vẽ cá'], ['goals', 'Mục tiêu'], ['catalog', 'Sổ tay'], ['missions', 'Nhiệm vụ'], ['shop', 'Cửa hàng'], ['inventory', 'Kho đồ']];
@@ -127,42 +127,49 @@ export function AquariumScreen({ onAdd, onPlan }: { onAdd: () => void; onPlan: (
 
   return (
     <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 110 }} keyboardShouldPersistTaps="handled">
-      <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 4, gap: 8 }}>
-        <View style={{ flex: 1 }}>
-          <Text style={styles.h1} numberOfLines={1}>{game.cafeName}</Text>
-          <Text style={{ color: C.sub, marginTop: 2 }}>Cấp {lv} · Khu vườn dưới nước</Text>
+      <View style={styles.hero}>
+        <View style={styles.badge}>
+          <Icon name="water" size={30} color={C.primary} />
+          <View style={styles.badgeNum}><Text style={{ color: '#fff', fontSize: 11, fontWeight: '700' }}>{lv}</Text></View>
         </View>
-        <Chip id="coin" value={game.coins} label="xu" />
-        <Chip id="pearl" value={game.pearls} label="ngọc trai" />
-      </View>
-      <View style={{ marginTop: 10, paddingHorizontal: 4, flexDirection: 'row', alignItems: 'center', gap: 10 }}>
         <View style={{ flex: 1 }}>
-          <ProgressBar value={(game.xp % G.XP_PER_LEVEL) / G.XP_PER_LEVEL} height={5} />
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+            <Text style={styles.title} numberOfLines={1}>{game.cafeName}</Text>
+            <View style={styles.lvChip}><Text style={{ color: C.primary, fontSize: 12, fontWeight: '700' }}>Cấp {lv}</Text></View>
+          </View>
+          <View style={{ marginTop: 8, flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+            <View style={{ flex: 1 }}>
+              <ProgressBar value={(game.xp % G.XP_PER_LEVEL) / G.XP_PER_LEVEL} height={8} color={C.accent} />
+            </View>
+            <Text style={{ fontSize: 12, color: C.sub }}>{game.xp % G.XP_PER_LEVEL}/{G.XP_PER_LEVEL} XP{game.eggs ? ` · ${game.eggs} trứng` : ''}</Text>
+          </View>
         </View>
-        <Text style={{ fontSize: 12, color: C.sub }}>{game.xp % G.XP_PER_LEVEL}/{G.XP_PER_LEVEL} XP{game.eggs ? ` · ${game.eggs} trứng` : ''}</Text>
       </View>
 
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 16, paddingHorizontal: 4 }}>
-        <Text style={{ color: C.sub, fontSize: 12 }}>MỘT CHÚT BÌNH YÊN MỖI NGÀY</Text>
+      <View style={{ flexDirection: 'row', gap: 10, marginTop: 12 }}>
+        <Stat id="coin" value={game.coins} label="Xu vàng" bg={C.warnSoft} />
+        <Stat id="pearl" value={game.pearls} label="Ngọc trai" bg={C.aquaSoft} />
+        <Stat icon="nutrition" value={game.food} label="Thức ăn" bg={C.primarySoft} />
+      </View>
+
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 14, paddingHorizontal: 4 }}>
+        <Text style={{ color: C.sub, fontSize: 12 }}>MỘT CHÚT BÌNH YÊN MỖI NGÀY · {streak} ngày ghi chép</Text>
         <Button label={focus ? 'Xong' : 'Chỉ ngắm'} kind="soft" onPress={() => { setFocus(!focus); setPane('pond'); setNaming(null); }} />
       </View>
-      {!focus ? <View style={styles.segment}>
+      {!focus ? <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 12, marginHorizontal: -16 }} contentContainerStyle={{ paddingHorizontal: 16, gap: 8 }}>
         {PANES.map(([id, label]) => (
-          <Pressable key={id} onPress={() => setPane(id)} style={[styles.segItem, pane === id && { backgroundColor: C.card }]} accessibilityRole="tab" accessibilityState={{ selected: pane === id }}>
-            <Text style={{ fontSize: 12.5, fontWeight: '500', color: pane === id ? C.ink : C.sub }} numberOfLines={1}>{label}</Text>
+          <Pressable key={id} onPress={() => setPane(id)} style={[styles.segItem, pane === id && { backgroundColor: C.primary, borderColor: C.primary }]} accessibilityRole="tab" accessibilityState={{ selected: pane === id }}>
+            <Text style={{ fontSize: 13, fontWeight: '600', color: pane === id ? '#fff' : C.ink }} numberOfLines={1}>{label}</Text>
           </Pressable>
         ))}
-      </View> : null}
+      </ScrollView> : null}
 
-      {!focus ? <View style={{flexDirection:'row',flexWrap:'wrap',alignItems:'center',gap:10,marginTop:12,paddingHorizontal:4}}>
-        <Icon name="nutrition-outline" size={19} color={C.primary}/><Text style={{fontSize:13}} accessibilityLabel={`${game.food} phần thức ăn`}>{game.food} phần thức ăn</Text>
-        <Text style={{color:C.sub,fontSize:12}}>· {streak} ngày ghi chép</Text>
-      </View> : null}
       <RewardPop text={pop.text} tick={pop.tick} />
       <Animated.View style={{ opacity: fade }}>
       {pane === 'pond' ? (
         <>
           <AquariumExperience
+            lead={focus ? undefined : <View style={styles.water}><View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: C.accent }} /><Text style={{ fontSize: 13, fontWeight: '600' }}>Độ trong của nước: {Math.round(water.health * 100)}%</Text></View>}
             health={water.health}
             goalStages={Object.fromEntries(goals.map((g)=>[g.fishId,goalStage(g)]))}
             customFish={customFish.filter(f => f.inPond)}
@@ -378,11 +385,14 @@ function Reveal({ item, tick }: { item?: G.Item; tick: number }) {
   );
 }
 
-function Chip({ id, value, label }: { id: AssetId; value: number; label: string }) {
+function Stat({ id, icon, value, label, bg }: { id?: AssetId; icon?: string; value: number; label: string; bg: string }) {
   return (
-    <View style={styles.chip} accessibilityLabel={`${value} ${label}`}>
-      <Pix id={id} size={16} />
-      <Text style={{ fontSize: 13.5, fontWeight: '500', fontVariant: ['tabular-nums'] }}>{value}</Text>
+    <View style={[styles.stat, { backgroundColor: bg }]} accessibilityLabel={`${value} ${label}`}>
+      {id ? <Pix id={id} size={22} /> : <Icon name={icon!} size={20} color={C.primary} />}
+      <View style={{ flexShrink: 1 }}>
+        <Text style={{ fontFamily: DISPLAY, fontSize: 17, fontWeight: '700', fontVariant: ['tabular-nums'] }}>{value}</Text>
+        <Text style={{ fontSize: 11, color: C.sub }} numberOfLines={1}>{label}</Text>
+      </View>
     </View>
   );
 }
@@ -415,13 +425,18 @@ function Mission({ done, title, reward, action, warn, flush }: { done: boolean; 
 const styles = themed(() => StyleSheet.create({
   h1: { fontSize: 24, fontWeight: '500', color: C.ink, paddingHorizontal: 4 },
   sub: { color: C.sub, marginTop: 4, paddingHorizontal: 4, lineHeight: 20 },
-  chip: { flexDirection: 'row', alignItems: 'center', gap: 5, backgroundColor: C.card, paddingHorizontal: 10, minHeight: 32, borderRadius: 999 },
+  hero: { flexDirection: 'row', alignItems: 'center', gap: 14, backgroundColor: C.card, borderRadius: R.lg, padding: 16, boxShadow: `0 4px 16px -4px ${C.shadow}` },
+  badge: { width: 58, height: 58, borderRadius: 29, backgroundColor: C.aqua, alignItems: 'center', justifyContent: 'center' },
+  badgeNum: { position: 'absolute', right: -4, bottom: -4, minWidth: 22, height: 22, borderRadius: 11, backgroundColor: C.primary, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: C.card },
+  title: { fontFamily: DISPLAY, fontSize: 19, fontWeight: '700', color: C.ink, flexShrink: 1 },
+  lvChip: { backgroundColor: C.primarySoft, borderRadius: 999, paddingHorizontal: 9, paddingVertical: 3 },
+  stat: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 8, borderRadius: R.lg, paddingHorizontal: 12, paddingVertical: 12 },
+  water: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: C.card, borderRadius: 999, paddingHorizontal: 12, paddingVertical: 8, boxShadow: `0 2px 8px ${C.shadow}` },
   pop: { position: 'absolute', alignSelf: 'center', top: 230, zIndex: 2, flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, paddingVertical: 7, borderRadius: 999, backgroundColor: C.inv },
   reveal: { position: 'absolute', alignSelf: 'center', top: 44, zIndex: 2, alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.88)', borderRadius: R.lg, paddingHorizontal: 18, paddingVertical: 12 },
-  banner: { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: C.card, borderRadius: R.lg, padding: 16, marginTop: 12 },
+  banner: { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: C.card, borderRadius: R.lg, padding: 16, marginTop: 12, boxShadow: `0 4px 16px -4px ${C.shadow}` },
   input: { backgroundColor: C.card, borderRadius: R.md, paddingHorizontal: 14, paddingVertical: 13, fontSize: 15 },
-  segment: { flexDirection: 'row', flexWrap: 'wrap', rowGap: 4, backgroundColor: C.line, borderRadius: R.md, padding: 4, marginTop: 16 },
-  segItem: { flexGrow: 1, flexBasis: '30%', alignItems: 'center', justifyContent: 'center', minHeight: 40, borderRadius: R.md - 4 },
+  segItem: { alignItems: 'center', justifyContent: 'center', minHeight: 40, paddingHorizontal: 16, borderRadius: 999, backgroundColor: C.card, borderWidth: 1, borderColor: C.line },
   item: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 12 },
   sep: { height: StyleSheet.hairlineWidth, backgroundColor: C.line },
 }));

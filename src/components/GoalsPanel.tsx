@@ -8,7 +8,7 @@ import { ITEMS } from '../game/rules';
 import { Icon as FishIcon } from '../game/view/kit';
 import type { AssetId } from '../game/view/assets';
 import type { SavingGoal } from '../types';
-import { AmountInput, Button, Card, ProgressBar, SectionTitle, Text, TextInput, confirm } from './ui';
+import { AmountInput, Button, Card, DISPLAY, ProgressBar, SectionTitle, Text, TextInput, confirm } from './ui';
 
 export function GoalsPanel() {
   const { goals, game } = useStore();
@@ -39,10 +39,10 @@ export function GoalsPanel() {
       return <Card key={goal.id} style={{ marginBottom: 12, gap: 10 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
           <FishIcon id={goal.fishId as AssetId} size={52} />
-          <View style={{ flex: 1 }}><Text style={{ fontSize: 16, fontWeight: '500' }}>{goal.name}</Text><Text style={{ fontSize: 12, color: C.sub, marginTop: 4 }}>{game.names[goal.fishId] || ITEMS.find((i) => i.id === goal.fishId)?.name}{goal.deadline ? ` · Hạn ${shortDate(goal.deadline)}` : ''}</Text></View>
-          <Text style={{ fontSize: 20, color: C.primary }}>{Math.round(progress * 100)}%</Text>
+          <View style={{ flex: 1 }}><Text style={{ fontFamily: DISPLAY, fontSize: 16, fontWeight: '700' }}>{goal.name}</Text><Text style={{ fontSize: 12, color: C.sub, marginTop: 4 }}>{game.names[goal.fishId] || ITEMS.find((i) => i.id === goal.fishId)?.name}{goal.deadline ? ` · Hạn ${shortDate(goal.deadline)}` : ''}</Text></View>
+          <Text style={{ fontFamily: DISPLAY, fontSize: 20, fontWeight: '700', color: C.primary }}>{Math.round(progress * 100)}%</Text>
         </View>
-        <ProgressBar value={progress} height={6} />
+        <ProgressBar value={progress} height={8} color={C.accent} />
         <Text style={{ color: C.sub, fontSize: 13 }}>Đã góp {fmt(total)} / {fmt(goal.target)}</Text>
         {progress >= 1 ? <Text style={{ color: C.primary }}>Bạn đã hoàn thành mục tiêu này.</Text> : <Text style={{ color: C.sub, fontSize: 12 }}>Còn {fmt(Math.max(0, goal.target - total))} · Ngoại hình đổi ở mốc 25%, 50%, 100%</Text>}
         <View style={{ flexDirection: 'row', gap: 10 }}>

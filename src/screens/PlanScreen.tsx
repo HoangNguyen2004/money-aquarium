@@ -7,7 +7,7 @@ import { addMonths, fmt, fmtShort, monthKey, monthLabel, today } from '../format
 import { setBudget, setBudgets, setPlan, useStore } from '../store';
 import { forecast, monthStats } from '../report';
 import type { Transaction } from '../types';
-import { AmountInput, Button, Card, CatIcon, Icon, ProgressBar, SectionTitle, confirm, Text } from '../components/ui';
+import { AmountInput, Button, Card, CatIcon, DISPLAY, Icon, ProgressBar, SectionTitle, confirm, Text } from '../components/ui';
 
 type Editing = { key: 'income' | 'savings' | string; title: string; hint: string; value: number } | null;
 
@@ -64,53 +64,70 @@ export function PlanScreen() {
     else run();
   }
 
+  const now = new Date();
+  const daysLeft = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate() - now.getDate() + 1;
+  const leftover = plan.income - stats.expense;
+  const savedRatio = plan.savings > 0 && plan.income > 0 ? Math.max(0, leftover) / plan.savings : 0;
+  const tone = (ratio: number) => (ratio > 1 ? C.expense : ratio >= 0.8 ? C.warn : C.accent);
+
   return (
-    <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 110 }}>
+    <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 120 }}>
       <Text style={styles.h1}>Kế hoạch thu chi</Text>
       <Text style={styles.sub}>{monthLabel(month)} · lặp lại hằng tháng</Text>
 
-      <Card style={{ marginTop: 16, paddingVertical: 6 }}>
-        <Pressable style={styles.row} onPress={() => open({ key: 'income', title: 'Thu nhập dự kiến', hint: 'Tổng thu nhập bạn dự tính mỗi tháng.', value: plan.income })}>
-          <View style={[styles.dot, { backgroundColor: C.primarySoft }]}><Icon name="trending-up" size={18} color={C.primary} /></View>
-          <Text style={styles.rowLabel}>Thu nhập dự kiến</Text>
-          <Text style={styles.rowValue}>{plan.income ? fmt(plan.income) : 'Đặt'}</Text>
-          <Icon name="chevron-forward" size={16} color={C.faint} />
+      <View style={{ flexDirection: 'row', gap: 12, marginTop: 16 }}>
+        <Pressable style={[styles.stat, { flex: 1 }]} onPress={() => open({ key: 'income', title: 'Thu nhập dự kiến', hint: 'Tổng thu nhập bạn dự tính mỗi tháng.', value: plan.income })}>
+          <View style={styles.statTop}>
+            <View style={[styles.iconBox, { backgroundColor: C.aquaSoft }]}><Icon name="cash-outline" size={20} color={C.primary} /></View>
+            {plan.income ? <View style={styles.chip}><Icon name="checkmark" size={12} color={C.primary} /><Text style={styles.chipText}>Đã đặt</Text></View> : null}
+          </View>
+          <Text style={styles.statLabel}>Thu nhập dự kiến</Text>
+          <Text style={styles.statValue}>{plan.income ? fmt(plan.income) : 'Đặt'}</Text>
         </Pressable>
-        <View style={styles.sep} />
-        <Pressable style={styles.row} onPress={() => open({ key: 'savings', title: 'Mục tiêu tiết kiệm', hint: 'Số tiền bạn muốn để dành mỗi tháng.', value: plan.savings })}>
-          <View style={[styles.dot, { backgroundColor: C.warnSoft }]}><Icon name="wallet" size={18} color={C.warn} /></View>
-          <Text style={styles.rowLabel}>Mục tiêu tiết kiệm</Text>
-          <Text style={styles.rowValue}>{plan.savings ? fmt(plan.savings) : 'Đặt'}</Text>
-          <Icon name="chevron-forward" size={16} color={C.faint} />
+        <Pressable style={[styles.stat, { flex: 1 }]} onPress={() => open({ key: 'savings', title: 'Mục tiêu tiết kiệm', hint: 'Số tiền bạn muốn để dành mỗi tháng.', value: plan.savings })}>
+          <View style={styles.statTop}>
+            <View style={[styles.iconBox, { backgroundColor: C.warnSoft }]}><Icon name="wallet-outline" size={20} color={C.warn} /></View>
+            {plan.savings && plan.income ? <Text style={styles.pct}>{Math.round(Math.min(1, savedRatio) * 100)}%</Text> : null}
+          </View>
+          <Text style={styles.statLabel}>Mục tiêu tiết kiệm</Text>
+          <Text style={[styles.statValue, { color: C.primary }]}>{plan.savings ? fmt(plan.savings) : 'Đặt'}</Text>
+          {plan.savings && plan.income ? (
+            <>
+              <View style={{ marginTop: 8 }}><ProgressBar value={savedRatio} height={6} color={C.accent} /></View>
+              <Text style={styles.statNote}>Đang dư: {fmtShort(Math.max(0, leftover))}</Text>
+            </>
+          ) : null}
         </Pressable>
-      </Card>
+      </View>
 
       {plan.income > 0 ? (
-        <Card style={{ marginTop: 12 }}>
-          <Text style={{ color: C.sub, fontSize: 13 }}>Có thể chi trong tháng</Text>
-          <Text style={{ fontSize: 26, fontWeight: '500', color: C.ink, marginTop: 2 }}>{fmt(spendable)}</Text>
-          <View style={{ marginTop: 12, marginBottom: 8 }}>
-            <ProgressBar value={spendable ? stats.expense / spendable : 0} color={stats.expense > spendable ? C.expense : C.primary} />
+        <View style={[styles.tip, { flexDirection: 'column', alignItems: 'stretch' }]}>
+          <View style={{ flexDirection: 'row', gap: 12, alignItems: 'center' }}>
+            <View style={[styles.iconBox, { backgroundColor: C.warnSoft, width: 36, height: 36 }]}><Icon name="bulb-outline" size={18} color={C.warn} /></View>
+            <View style={{ flex: 1 }}>
+              <Text style={{ fontFamily: DISPLAY, fontWeight: '700', fontSize: 14, color: C.ink }}>Có thể chi {fmt(spendable)}</Text>
+              <ProgressBarRow ratio={spendable ? stats.expense / spendable : 0} tone={tone} />
+            </View>
           </View>
-          <Text style={{ color: C.sub, fontSize: 13, lineHeight: 19 }}>
+          <Text style={styles.tipText}>
             Đã chi {fmt(stats.expense)} · {stats.expense > spendable ? `vượt ${fmt(stats.expense - spendable)}` : `còn ${fmt(spendable - stats.expense)}`}
           </Text>
           {f !== null ? (
-            <Text style={{ color: f > spendable ? C.expense : C.sub, fontSize: 13, lineHeight: 19, marginTop: 2 }}>
+            <Text style={[styles.tipText, f > spendable && { color: C.expense }]}>
               Dự báo cuối tháng: {fmt(f)}{f > spendable ? ` — vượt ${fmtShort(f - spendable)}` : ''}
             </Text>
           ) : null}
           {allocated > 0 ? (
-            <Text style={{ color: allocated > spendable ? C.warn : C.sub, fontSize: 13, lineHeight: 19, marginTop: 2 }}>
+            <Text style={[styles.tipText, allocated > spendable && { color: C.warn }]}>
               Đã phân bổ hạn mức: {fmt(allocated)}{allocated > spendable ? ` — nhiều hơn số có thể chi ${fmtShort(allocated - spendable)}` : ''}
             </Text>
           ) : null}
-        </Card>
+        </View>
       ) : (
-        <Card style={{ marginTop: 12, flexDirection: 'row', gap: 10 }}>
-          <Icon name="bulb-outline" size={20} color={C.warn} />
-          <Text style={{ flex: 1, color: C.sub, lineHeight: 20 }}>Đặt thu nhập dự kiến để app tính số tiền có thể chi và gợi ý hạn mức cho từng danh mục.</Text>
-        </Card>
+        <View style={styles.tip}>
+          <View style={[styles.iconBox, { backgroundColor: C.warnSoft, width: 36, height: 36 }]}><Icon name="bulb-outline" size={18} color={C.warn} /></View>
+          <Text style={[styles.tipText, { flex: 1, marginTop: 0 }]}>Đặt thu nhập dự kiến để app tính số tiền có thể chi và gợi ý hạn mức cho từng danh mục.</Text>
+        </View>
       )}
 
       <SectionTitle
@@ -118,51 +135,49 @@ export function PlanScreen() {
           spendable > 0 ? (
             <Pressable onPress={applySuggestion} hitSlop={12} style={{ flexDirection: 'row', gap: 4, alignItems: 'center' }}>
               <Icon name="sparkles" size={14} color={C.primary} />
-              <Text style={{ color: C.primary, fontWeight: '500', fontSize: 13 }}>Gợi ý phân bổ</Text>
+              <Text style={{ color: C.primary, fontWeight: '600', fontSize: 13 }}>Gợi ý phân bổ</Text>
             </Pressable>
           ) : null
         }
       >
-        Hạn mức theo danh mục
+        Hạn mức theo danh mục{'  '}<Text style={styles.count}> {EXPENSE_CATS.length} </Text>
       </SectionTitle>
-      <Card style={{ paddingVertical: 6 }}>
-        {EXPENSE_CATS.map((c, i) => {
+      <View style={{ gap: 12 }}>
+        {EXPENSE_CATS.map((c) => {
           const limit = budgets[c.id] ?? 0;
           const spent = spentOf(c.id);
           const ratio = limit ? spent / limit : 0;
+          const color = tone(ratio);
           return (
-            <View key={c.id}>
-              {i > 0 ? <View style={styles.sep} /> : null}
-              <Pressable
-                style={styles.budget}
-                onPress={() => open({ key: c.id, title: `Hạn mức ${c.name}`, hint: 'Số tiền tối đa cho danh mục này mỗi tháng. Để 0 nếu không giới hạn.', value: limit })}
-              >
-                <CatIcon id={c.id} size={36} />
+            <Pressable
+              key={c.id}
+              style={styles.budget}
+              onPress={() => open({ key: c.id, title: `Hạn mức ${c.name}`, hint: 'Số tiền tối đa cho danh mục này mỗi tháng. Để 0 nếu không giới hạn.', value: limit })}
+            >
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                <CatIcon id={c.id} size={44} />
                 <View style={{ flex: 1 }}>
-                  <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                    <Text style={{ fontSize: 14.5, fontWeight: '500', color: C.ink }}>{c.name}</Text>
-                    <Text style={{ fontSize: 13.5, color: limit && ratio > 1 ? C.expense : C.ink, fontWeight: '500', fontVariant: ['tabular-nums'] }}>
-                      {fmtShort(spent)}{limit ? ` / ${fmtShort(limit)}` : ''}
-                    </Text>
-                  </View>
-                  {limit ? (
-                    <>
-                      <View style={{ marginVertical: 6 }}>
-                        <ProgressBar value={ratio} height={6} color={ratio > 1 ? C.expense : ratio >= 0.8 ? C.warn : cat(c.id).color} />
-                      </View>
-                      <Text style={{ fontSize: 12, color: ratio > 1 ? C.expense : C.sub }}>
-                        {ratio > 1 ? `Vượt ${fmt(spent - limit)}` : `Còn ${fmt(limit - spent)}`}
-                      </Text>
-                    </>
-                  ) : (
-                    <Text style={{ fontSize: 12, color: C.faint, marginTop: 3 }}>Chưa đặt hạn mức</Text>
-                  )}
+                  <Text style={styles.catName}>{c.name}</Text>
+                  <Text style={styles.catSub}>{limit ? `Còn ${daysLeft} ngày · ${ratio > 1 ? `Vượt ${fmtShort(spent - limit)}` : `Dư ${fmtShort(limit - spent)}`}` : 'Chưa đặt hạn mức'}</Text>
                 </View>
-              </Pressable>
-            </View>
+                <View style={{ alignItems: 'flex-end' }}>
+                  <Text style={[styles.catSpent, { color: limit && ratio >= 0.8 ? color : C.ink }]}>{fmt(spent)}</Text>
+                  {limit ? <Text style={styles.catSub}>/ {fmt(limit)}</Text> : null}
+                </View>
+              </View>
+              {limit ? (
+                <>
+                  <View style={{ marginTop: 12 }}><ProgressBar value={ratio} height={8} color={color} /></View>
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 8 }}>
+                    <Text style={[styles.catSub, { color }]}>{Math.round(ratio * 100)}% {ratio > 1 ? 'đã vượt' : ratio >= 0.8 ? 'đã dùng' : 'mức cho phép'}</Text>
+                    <Text style={styles.catSub}>{ratio > 1 ? 'Vượt hạn mức' : ratio >= 0.8 ? 'Gần hết' : 'Tiến độ tốt'}</Text>
+                  </View>
+                </>
+              ) : null}
+            </Pressable>
           );
         })}
-      </Card>
+      </View>
 
       <GoalsPanel />
 
@@ -186,15 +201,29 @@ export function PlanScreen() {
   );
 }
 
+function ProgressBarRow({ ratio, tone }: { ratio: number; tone: (r: number) => string }) {
+  return <View style={{ marginTop: 6 }}><ProgressBar value={ratio} height={6} color={tone(ratio)} /></View>;
+}
+
 const styles = themed(() => StyleSheet.create({
-  h1: { fontSize: 24, fontWeight: '500', color: C.ink, paddingHorizontal: 4 },
-  sub: { color: C.sub, marginTop: 2, paddingHorizontal: 4 },
-  row: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 12 },
-  rowLabel: { flex: 1, fontSize: 15, color: C.ink, fontWeight: '500' },
-  rowValue: { fontSize: 15, color: C.primary, fontWeight: '500' },
-  dot: { width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center' },
-  sep: { height: StyleSheet.hairlineWidth, backgroundColor: C.line },
-  budget: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 12 },
+  h1: { fontFamily: DISPLAY, fontSize: 26, fontWeight: '700', color: C.ink },
+  sub: { color: C.sub, marginTop: 2, fontSize: 13 },
+  stat: { backgroundColor: C.card, borderRadius: R.lg, padding: 16, boxShadow: `0 4px 16px -4px ${C.shadow}` },
+  statTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14, minHeight: 36 },
+  iconBox: { width: 40, height: 40, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
+  chip: { flexDirection: 'row', alignItems: 'center', gap: 3, backgroundColor: C.primarySoft, borderRadius: 999, paddingHorizontal: 8, paddingVertical: 3 },
+  chipText: { fontSize: 11, fontWeight: '600', color: C.primary },
+  pct: { fontSize: 12, fontWeight: '700', color: C.sub },
+  statLabel: { fontSize: 12, color: C.sub },
+  statValue: { fontFamily: DISPLAY, fontSize: 20, fontWeight: '700', color: C.ink, marginTop: 2 },
+  statNote: { fontSize: 11, color: C.sub, marginTop: 6 },
+  tip: { flexDirection: 'row', gap: 12, alignItems: 'center', backgroundColor: C.tint, borderRadius: R.lg, padding: 16, marginTop: 14 },
+  tipText: { fontSize: 13, lineHeight: 20, color: C.sub, marginTop: 6 },
+  count: { fontSize: 12, fontWeight: '600', color: C.sub, backgroundColor: C.line },
+  budget: { backgroundColor: C.card, borderRadius: R.lg, padding: 16, boxShadow: `0 4px 16px -4px ${C.shadow}` },
+  catName: { fontFamily: DISPLAY, fontSize: 16, fontWeight: '700', color: C.ink },
+  catSub: { fontSize: 12, color: C.sub, marginTop: 2 },
+  catSpent: { fontFamily: DISPLAY, fontSize: 17, fontWeight: '700', fontVariant: ['tabular-nums'] },
   backdrop: { flex: 1, backgroundColor: 'rgba(20,24,22,0.45)', justifyContent: 'center', padding: 22 },
   sheet: { backgroundColor: C.card, borderRadius: R.lg, padding: 20 },
 }));

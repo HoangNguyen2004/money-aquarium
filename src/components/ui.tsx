@@ -9,11 +9,19 @@ import type { Transaction } from '../types';
 type IconName = React.ComponentProps<typeof Ionicons>['name'];
 
 // Phông tùy biến trên Android không đổi nét theo fontWeight, nên mỗi độ đậm là một fontFamily riêng.
-const geist = (style: unknown) =>
-  ({ fontFamily: StyleSheet.flatten(style as TextStyle)?.fontWeight === '500' ? 'Geist_500Medium' : 'Geist_400Regular', fontWeight: 'normal' }) as const;
+// fontFamily: DISPLAY chọn Plus Jakarta Sans (tiêu đề, số tiền); còn lại là Be Vietnam Pro.
+export const DISPLAY = 'display';
+const BODY = { '500': 'BeVietnamPro_500Medium', '600': 'BeVietnamPro_600SemiBold', '700': 'BeVietnamPro_700Bold', bold: 'BeVietnamPro_700Bold' } as Record<string, string>;
+const HEAD = { '500': 'PlusJakartaSans_600SemiBold', '600': 'PlusJakartaSans_600SemiBold', '700': 'PlusJakartaSans_700Bold', bold: 'PlusJakartaSans_700Bold', '800': 'PlusJakartaSans_800ExtraBold' } as Record<string, string>;
+const font = (style: unknown) => {
+  const f = StyleSheet.flatten(style as TextStyle);
+  const w = String(f?.fontWeight ?? '400');
+  const fontFamily = f?.fontFamily === DISPLAY ? HEAD[w] ?? 'PlusJakartaSans_600SemiBold' : BODY[w] ?? 'BeVietnamPro_400Regular';
+  return { fontFamily, fontWeight: 'normal' } as const;
+};
 
-export const Text = (p: TextProps) => <RNText {...p} style={[{ color: C.ink }, p.style, geist(p.style)]} />;
-export const TextInput = (p: TextInputProps) => <RNTextInput {...p} style={[{ color: C.ink }, p.style, geist(p.style)]} />;
+export const Text = (p: TextProps) => <RNText {...p} style={[{ color: C.ink }, p.style, font(p.style)]} />;
+export const TextInput = (p: TextInputProps) => <RNTextInput {...p} style={[{ color: C.ink }, p.style, font(p.style)]} />;
 
 export function Icon({ name, size = 20, color = C.ink }: { name: string; size?: number; color?: string }) {
   return <Ionicons name={name as IconName} size={size} color={color} />;
@@ -35,7 +43,7 @@ export function SectionTitle({ children, right }: { children: React.ReactNode; r
 export function CatIcon({ id, size = 40 }: { id: string; size?: number }) {
   const c = cat(id);
   return (
-    <View style={{ width: size, height: size, borderRadius: size / 2, backgroundColor: c.color + '22', alignItems: 'center', justifyContent: 'center' }}>
+    <View style={{ width: size, height: size, borderRadius: size * 0.36, backgroundColor: c.color + '22', alignItems: 'center', justifyContent: 'center' }}>
       <Icon name={c.icon} size={size * 0.48} color={c.color} />
     </View>
   );
@@ -123,7 +131,7 @@ export function Button({
       accessibilityLabel={label}
       accessibilityState={{ disabled: !!disabled }}
       disabled={disabled}
-      style={({ pressed }) => [styles.btn, { backgroundColor: solid ? C.primary : 'transparent', borderColor: solid ? C.primary : C.faint, opacity: disabled ? 0.45 : 1, transform: [{ scale: pressed ? 0.97 : 1 }] }, style]}
+      style={({ pressed }) => [styles.btn, { backgroundColor: solid ? C.primary : C.card, borderColor: solid ? C.primary : C.line, opacity: disabled ? 0.45 : 1, transform: [{ scale: pressed ? 0.97 : 1 }] }, style]}
     >
       {icon ? <Icon name={icon} size={18} color={fg} /> : null}
       <Text style={{ color: fg, fontWeight: '500', fontSize: 15 }}>{label}</Text>
@@ -135,7 +143,7 @@ export function TxRow({ tx, onPress }: { tx: Transaction; onPress?: () => void }
   const c = cat(tx.category);
   return (
     <Pressable onPress={onPress} style={({ pressed }) => [styles.tx, pressed && onPress ? { opacity: 0.6 } : null]}>
-      <CatIcon id={tx.category} />
+      <CatIcon id={tx.category} size={44} />
       <View style={{ flex: 1 }}>
         <Text style={styles.txNote} numberOfLines={1}>{tx.note || c.name}</Text>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
@@ -144,7 +152,7 @@ export function TxRow({ tx, onPress }: { tx: Transaction; onPress?: () => void }
           {tx.source === 'bot' ? <Icon name="chatbubble-ellipses" size={12} color={C.faint} /> : null}
         </View>
       </View>
-      <Text style={[styles.txAmount, { color: tx.type === 'income' ? C.income : C.ink }]}>
+      <Text style={[styles.txAmount, { color: tx.type === 'income' ? C.income : C.expense }]}>
         {tx.type === 'income' ? '+' : '-'}{fmt(tx.amount)}
       </Text>
     </Pressable>
@@ -172,14 +180,14 @@ export function notify(title: string, message: string) {
 }
 
 const styles = themed(() => StyleSheet.create({
-  card: { backgroundColor: C.card, borderRadius: R.lg, padding: 16 },
-  sectionRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 22, marginBottom: 10, paddingHorizontal: 4 },
-  section: { fontSize: 13, fontWeight: '500', color: C.sub },
-  month: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  monthText: { fontSize: 16, letterSpacing: -0.3, fontWeight: '500', color: C.ink, minWidth: 124, textAlign: 'center' },
-  btn: { flexDirection: 'row', gap: 8, alignItems: 'center', justifyContent: 'center', minHeight: 44, paddingVertical: 11, paddingHorizontal: 18, borderRadius: R.sm, borderWidth: 1 },
-  tx: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 10 },
-  txNote: { fontSize: 15, fontWeight: '500', color: C.ink },
-  txSub: { fontSize: 12.5, color: C.sub, marginTop: 2 },
-  txAmount: { fontSize: 15, fontWeight: '500', fontVariant: ['tabular-nums'] },
+  card: { backgroundColor: C.card, borderRadius: R.lg, padding: 16, boxShadow: `0 4px 16px -4px ${C.shadow}` },
+  sectionRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 24, marginBottom: 12, paddingHorizontal: 4 },
+  section: { fontFamily: DISPLAY, fontSize: 18, fontWeight: '700', color: C.ink },
+  month: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: C.card, borderRadius: 999, paddingHorizontal: 12, paddingVertical: 8, boxShadow: `0 4px 16px -4px ${C.shadow}` },
+  monthText: { fontFamily: DISPLAY, fontSize: 17, fontWeight: '600', color: C.ink, minWidth: 116, textAlign: 'center' },
+  btn: { flexDirection: 'row', gap: 8, alignItems: 'center', justifyContent: 'center', minHeight: 44, paddingVertical: 11, paddingHorizontal: 18, borderRadius: 999, borderWidth: 1 },
+  tx: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 12, paddingHorizontal: 14, backgroundColor: C.card, borderRadius: R.md, boxShadow: `0 2px 10px -2px ${C.shadow}` },
+  txNote: { fontSize: 14, fontWeight: '600', color: C.ink },
+  txSub: { fontSize: 12, color: C.sub, marginTop: 2 },
+  txAmount: { fontFamily: DISPLAY, fontSize: 16, fontWeight: '700', fontVariant: ['tabular-nums'] },
 }));
