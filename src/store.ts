@@ -1,3 +1,4 @@
+import { validCustomFish, type CustomFish } from './game/customFish';
 import { useSyncExternalStore } from 'react';
 import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -12,6 +13,7 @@ import { contribute, createGoal } from './savings';
 const KEY = 'so-chi-tieu:v1';
 
 let state: AppState = {
+  customFish: [],
   goals: [],
   ready: false,
   transactions: [],
@@ -32,10 +34,10 @@ function set(patch: Partial<AppState>, persist = true) {
   if (patch.transactions) state.game = G.settle(state.game, state.transactions, today());
   listeners.forEach((l) => l());
   if (persist && state.ready) {
-    const { transactions, budgets, plan, chat, themeId, game, goals } = state;
+    const { transactions, budgets, plan, chat, themeId, game, goals, customFish } = state;
     // Bản web không lưu ảnh nền: data URI có thể làm đầy bộ nhớ trình duyệt và chặn luôn việc lưu giao dịch.
     const background = Platform.OS === 'web' ? null : state.background;
-    AsyncStorage.setItem(KEY, JSON.stringify({ transactions, budgets, plan, chat: chat.slice(-80), themeId, background, game, goals })).catch(
+    AsyncStorage.setItem(KEY, JSON.stringify({ transactions, budgets, plan, chat: chat.slice(-80), themeId, background, game, goals, customFish })).catch(
       () => {},
     );
   }
@@ -70,6 +72,7 @@ export async function loadStore() {
   set(
     {
       ready: true,
+      customFish: Array.isArray(saved.customFish) ? saved.customFish.filter(validCustomFish).slice(0, 12) : [],
       goals: Array.isArray(saved.goals) ? saved.goals : [],
       transactions: Array.isArray(saved.transactions) ? saved.transactions : [],
       budgets: saved.budgets ?? {},
@@ -203,7 +206,8 @@ export function setHasKey(hasKey: boolean) {
 }
 
 export function clearAll() {
-  set({ goals: [], transactions: [], budgets: {}, plan: { income: 0, savings: 0 }, chat: [], game: { ...G.newGame(), enabled: state.game.enabled } });
+  AsyncStorage.removeItem('aquarium:fish-draft').catch(() => {});
+  set({ customFish: [], goals: [], transactions: [], budgets: {}, plan: { income: 0, savings: 0 }, chat: [], game: { ...G.newGame(), enabled: state.game.enabled } });
 }
 
 /** Dữ liệu mẫu cho 2 tháng gần nhất để xem thử báo cáo. */
@@ -291,3 +295,16 @@ export function updateSavingGoal(id: string, name: string, target: number, fishI
 export function removeGoalContribution(goalId: string, entryId: string) {
   set({ goals: state.goals.map((g) => g.id === goalId ? { ...g, contributions: g.contributions.filter((e) => e.id !== entryId) } : g) });
 }
+
+export function saveCustomFish(fish: CustomFish): string | null {
+  const existing = state.customFish.find(f => f.id === fish.id);
+  if (!existing && state.customFish.length >= 12) return 'Bộ sưu tập đã có 12 cá. Hãy sửa hoặc xoá một cá trước.';
+  const next = { ...fish, id: existing?.id ?? `custom-${uid()}`, name: fish.name.trim().slice(0,24) };
+  if (!next.name || !validCustomFish(next)) return 'Bản vẽ không hợp lệ hoặc vượt giới hạn nét vẽ.';
+  const collection = existing ? state.customFish.map(f => f.id === next.id ? next : f) : [...state.customFish, next];
+  if (JSON.stringify(collection).length > 750_000) return 'Bộ sưu tập quá nhiều nét vẽ. Hãy xoá bớt nét hoặc một cá trước khi lưu.';
+  set({ customFish: collection });
+  return null;
+}
+export function deleteCustomFish(id: string) { set({ customFish: state.customFish.filter(f => f.id !== id) }); }
+export function toggleCustomFish(id: string) { set({ customFish: state.customFish.map(f => f.id === id ? { ...f, inPond: !f.inPond } : f) }); }

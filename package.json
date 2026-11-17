@@ -33,7 +33,7 @@
     "start": "expo start",
     "web": "expo start --web",
     "typecheck": "tsc --noEmit",
-    "test": "tsc src/receipt.test.ts src/game/finance.test.ts src/game/rules.test.ts src/game/sim/fish.test.ts src/game/sim/cafe.test.ts --ignoreConfig --rootDir src --outDir node_modules/.cache/tests --module commonjs --target es2022 --skipLibCheck --strict --types node && node node_modules/.cache/tests/receipt.test.js && node node_modules/.cache/tests/game/rules.test.js && node node_modules/.cache/tests/game/sim/fish.test.js && node node_modules/.cache/tests/game/sim/cafe.test.js && node node_modules/.cache/tests/game/finance.test.js",
+    "test": "tsc src/game/fishPaint.test.ts src/receipt.test.ts src/game/finance.test.ts src/game/rules.test.ts src/game/sim/fish.test.ts src/game/sim/cafe.test.ts --ignoreConfig --rootDir src --outDir node_modules/.cache/tests --module commonjs --target es2022 --skipLibCheck --strict --types node && node node_modules/.cache/tests/game/fishPaint.test.js && node node_modules/.cache/tests/receipt.test.js && node node_modules/.cache/tests/game/rules.test.js && node node_modules/.cache/tests/game/sim/fish.test.js && node node_modules/.cache/tests/game/sim/cafe.test.js && node node_modules/.cache/tests/game/finance.test.js",
     "assets": "node scripts/make-game-assets.mjs",
     "build:web": "expo export --platform web",
     "build:demo": "npm run build:web && node scripts/prepare-aquarium-preview.mjs"

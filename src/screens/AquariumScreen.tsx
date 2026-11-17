@@ -1,3 +1,4 @@
+import { FishStudio } from '../components/FishStudio';
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { C, R, themed } from '../theme';
@@ -16,12 +17,12 @@ import { Icon as Pix } from '../game/view/kit';
 import type { AssetId } from '../game/view/assets';
 import { Button, Card, Icon, ProgressBar, SectionTitle, Text, TextInput, confirm, notify } from '../components/ui';
 
-type Pane = 'goals' | 'catalog' | 'pond' | 'missions' | 'shop' | 'inventory';
-const PANES: [Pane, string][] = [['pond', 'Hồ cá'], ['goals', 'Mục tiêu'], ['catalog', 'Sổ tay'], ['missions', 'Nhiệm vụ'], ['shop', 'Cửa hàng'], ['inventory', 'Kho đồ']];
+type Pane = 'studio' | 'goals' | 'catalog' | 'pond' | 'missions' | 'shop' | 'inventory';
+const PANES: [Pane, string][] = [['pond', 'Hồ cá'], ['studio', 'Vẽ cá'], ['goals', 'Mục tiêu'], ['catalog', 'Sổ tay'], ['missions', 'Nhiệm vụ'], ['shop', 'Cửa hàng'], ['inventory', 'Kho đồ']];
 const SPOTS = { ...POND_SPOTS };
 
 export function AquariumScreen({ onAdd, onPlan }: { onAdd: () => void; onPlan: () => void }) {
-  const { game, transactions, plan, budgets, goals } = useStore();
+  const { game, transactions, plan, budgets, goals, customFish } = useStore();
   const [name, setName] = useState('');
   const [focus, setFocus] = useState(false);
   const [pane, setPane] = useState<Pane>('pond');
@@ -164,15 +165,16 @@ export function AquariumScreen({ onAdd, onPlan }: { onAdd: () => void; onPlan: (
           <AquariumExperience
             health={water.health}
             goalStages={Object.fromEntries(goals.map((g)=>[g.fishId,goalStage(g)]))}
-            fish={shown('pond').filter((i) => i.fish).map((i) => i.id)}
+            customFish={customFish.filter(f => f.inPond)}
+            fish={[...shown('pond').filter((i) => i.fish).map((i) => i.id), ...customFish.filter(f => f.inPond).map(f => f.id)]}
             decor={shown('pond').filter((i) => !i.fish).map((i) => i.id)}
-            names={Object.fromEntries(shown('pond').map((i) => [i.id, game.names[i.id] || i.name]))}
+            names={Object.fromEntries(shown('pond').map((i) => [i.id, game.names[i.id] || i.name]).concat(customFish.map(f => [f.id, f.name])))}
             care={game.fishCare ?? {}}
             placed={game.placed}
             feedTick={feedTick}
             placing={placing && placing in POND_SPOTS ? placing : null}
             onPlaced={donePlacing}
-            onFish={(id) => { if (!focus) setNaming({ id, text: game.names[id] ?? '' }); }}
+            onFish={(id) => { if (focus) return; if (id.startsWith('custom-')) return; if (!focus) setNaming({ id, text: game.names[id] ?? '' }); }}
           />
           <Reveal item={reveal?.item} tick={reveal?.tick ?? 0} />
           {!focus ? <Pressable accessibilityRole="button" accessibilityLabel="Xem nhịp chi tiêu" onPress={onPlan} style={[styles.banner,{padding:12}]}><Icon name="water-outline" color={C.primary}/><View style={{flex:1}}><Text style={{fontSize:13,fontWeight:'500'}}>{water.label}</Text><Text style={{color:C.sub,fontSize:12,lineHeight:18,marginTop:3}}>{water.limit>0?`Đã chi ${fmtShort(water.actual)} · Nhịp đến hôm nay ${fmtShort(water.expected)}`:water.hint}</Text></View><Icon name="chevron-forward" size={16} color={C.faint}/></Pressable> : null}
@@ -212,6 +214,7 @@ export function AquariumScreen({ onAdd, onPlan }: { onAdd: () => void; onPlan: (
         </>
       ) : null}
 
+      <View style={{ display: pane === 'studio' ? 'flex' : 'none' }}><FishStudio onPond={() => setPane('pond')} /></View>
       {pane === 'goals' ? <GoalsPanel /> : null}
       {pane === 'catalog' ? <Bestiary /> : null}
       {pane === 'missions' ? (

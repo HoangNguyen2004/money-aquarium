@@ -1,3 +1,5 @@
+import { CustomFishArt } from '../../components/CustomFishArt';
+import type { CustomFish } from '../customFish';
 // Aquarium Scene: chỉ vẽ. Cá bơi theo sim/fish.ts; file này xếp lớp nước, rong, đồ trang trí, cá, thức ăn, bong bóng.
 import React, { useEffect, useRef, useState } from 'react';
 import { Pressable, View } from 'react-native';
@@ -14,7 +16,8 @@ export const POND_SPOTS: Record<string, { min: number; max: number; y: number; s
   lotus: { min: 4, max: 154, y: 4, start: 128 },
 };
 
-export function AquariumView({ fish, care = {}, decor, names, placed, feedTick, placing, onPlaced, onFish }: {
+export function AquariumView({ customFish = [], fish, care = {}, decor, names, placed, feedTick, placing, onPlaced, onFish }: {
+  customFish?: CustomFish[];
   care?: Record<string, { days: number; lastFed: string }>;
   fish: string[]; // id các loài đang thả
   decor: string[]; // id đồ trang trí đang bày
@@ -81,7 +84,8 @@ export function AquariumView({ fish, care = {}, decor, names, placed, feedTick, 
 
             {tank.fish.map((f) => {
               const profile = profileOf(f.id);
-              if (!SPECIES[f.id]) return null;
+              const custom = customFish.find(c => c.id === f.id);
+              if (!SPECIES[f.id] && !custom) return null;
               // đuôi vẫy: thân co giãn nhẹ theo tốc độ; đang ăn thì há to một nhịp
               const days = care[f.id]?.days ?? 0;
               const size = days >= 7 ? 1.2 : days >= 3 ? 1.02 : 0.82;
@@ -91,7 +95,7 @@ export function AquariumView({ fish, care = {}, decor, names, placed, feedTick, 
               const height = profile.height * size * s;
               return (
                 <React.Fragment key={f.id}>
-                  <View testID={`fish-art-${f.id}`} pointerEvents="none" style={{ position: 'absolute', left: f.x * s - width / 2, top: f.y * s * 1.65 - height / 2, width, height, transform: [{ scaleX: turns.current[f.id] ?? (f.face === 1 ? -1 : 1) }, { rotate: `${-tilt}deg` }] }}><ZenFish id={f.id} time={calm ? 0 : time} speed={speed} days={days} eating={f.mood === 'eat'} /></View>
+                  <View testID={`fish-art-${f.id}`} pointerEvents="none" style={{ position: 'absolute', left: f.x * s - width / 2, top: f.y * s * 1.65 - height / 2, width, height, transform: [{ scaleX: turns.current[f.id] ?? (f.face === 1 ? -1 : 1) }, { rotate: `${-tilt}deg` }] }}>{custom ? <CustomFishArt fish={custom} /> : <ZenFish id={f.id} time={calm ? 0 : time} speed={speed} days={days} eating={f.mood === 'eat'} />}</View>
                   {f.mood === 'happy' || f.mood === 'eat' ? <Px id="heart" s={s} x={f.x - 3} y={f.y * 1.65 - 16 - (1.2 - f.t) * 3} /> : null}
                   <View pointerEvents="none" style={{ position: 'absolute', left: (f.x - 20) * s, top: f.y * 1.65 * s + height * 0.4, width: 40 * s }}>
                     <Text style={{ textAlign: 'center', fontSize: 5.2 * s, color: '#D2EAE6' }} numberOfLines={1}>{names[f.id] || ''}</Text>

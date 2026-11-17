@@ -37,6 +37,7 @@ export interface SavingGoal {
 }
 
 export interface AppState {
+  customFish: import('./game/customFish').CustomFish[];
   goals: SavingGoal[];
   ready: boolean;
   transactions: Transaction[];

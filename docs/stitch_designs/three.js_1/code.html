@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+    }
+  </style>
+</head>
+<body>
+<!-- STITCH_THREEJS_START:ANIMATION_19 class="fixed inset-0 w-full h-full bg-transparent" -->
+<div class="fixed inset-0 w-full h-full bg-transparent" style="display:block;">
+<script src="https://ajax.googleapis.com/ajax/libs/threejs/r125/three.min.js"></script>
+<div id="threejs-container-ANIMATION_19" style="width:100%;height:100%"></div>
+<script>
+(function() {
+  const container = document.getElementById('threejs-container-ANIMATION_19');
+  const devicePixelRatio = window.devicePixelRatio || 1;
+  // Three.js Aquarium 3D Scene
+const scene = new THREE.Scene();
+
+// Camera setup
+const width = container.clientWidth || window.innerWidth;
+const height = container.clientHeight || 340;
+const camera = new THREE.PerspectiveCamera(55, width / height, 0.1, 100);
+camera.position.set(0, 0, 8);
+
+// Renderer setup
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setSize(width, height);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+container.appendChild(renderer.domElement);
+
+// Lighting
+const ambientLight = new THREE.AmbientLight(0xd4f1f4, 1.2);
+scene.add(ambientLight);
+
+const sunLight = new THREE.DirectionalLight(0x75e6da, 1.8);
+sunLight.position.set(2, 6, 4);
+scene.add(sunLight);
+
+const pointLight = new THREE.PointLight(0xffa07a, 1.5, 10);
+pointLight.position.set(-2, -1, 3);
+scene.add(pointLight);
+
+// Water Caustic / Glow Particles (Floating bubbles & plankton)
+const particleCount = 45;
+const particleGeo = new THREE.SphereGeometry(0.04, 8, 8);
+const particleMat = new THREE.MeshBasicMaterial({
+  color: 0x98f6e4,
+  transparent: true,
+  opacity: 0.65
+});
+
+const bubbles = [];
+for (let i = 0; i < particleCount; i++) {
+  const mesh = new THREE.Mesh(particleGeo, particleMat);
+  mesh.position.set(
+    (Math.random() - 0.5) * 9,
+    (Math.random() - 0.5) * 5 - 1,
+    (Math.random() - 0.5) * 4
+  );
+  mesh.userData = {
+    speedY: 0.008 + Math.random() * 0.015,
+    wobbleSpeed: 1 + Math.random() * 2,
+    baseX: mesh.position.x
+  };
+  bubbles.push(mesh);
+  scene.add(mesh);
+}
+
+// 3D Aquatic Plants / Corals (Low-poly colorful seabed elements)
+const seabedGroup = new THREE.Group();
+const stemMat = new THREE.MeshLambertMaterial({ color: 0x10b981 });
+const coralMat = new THREE.MeshLambertMaterial({ color: 0xf472b6 });
+const rockMat = new THREE.MeshLambertMaterial({ color: 0x475569 });
+
+// Rocks
+for (let i = 0; i < 5; i++) {
+  const rockGeo = new THREE.DodecahedronGeometry(0.35 + Math.random() * 0.25, 0);
+  const rock = new THREE.Mesh(rockGeo, rockMat);
+  rock.position.set((i - 2) * 1.8 + (Math.random() - 0.5) * 0.5, -2.4, (Math.random() - 0.5) * 1.5);
+  rock.scale.set(1.4, 0.8, 1);
+  seabedGroup.add(rock);
+}
+
+// Seaweed ribbons
+const seaweedMeshes = [];
+for (let i = 0; i < 7; i++) {
+  const plantGeo = new THREE.CylinderGeometry(0.05, 0.08, 1.8 + Math.random() * 0.8, 6);
+  const plant = new THREE.Mesh(plantGeo, (i % 2 === 0) ? stemMat : coralMat);
+  plant.position.set((i - 3) * 1.2 + (Math.random() - 0.5) * 0.4, -1.6, -1 + Math.random() * 0.8);
+  plant.userData = { offset: i * 0.7 };
+  seaweedMeshes.push(plant);
+  seabedGroup.add(plant);
+}
+scene.add(seabedGroup);
+
+// Helper function to build 3D Fish
+function createFish(bodyColor, finColor, scale = 1) {
+  const fishGroup = new THREE.Group();
+
+  // Body: squished sphere
+  const bodyGeo = new THREE.SphereGeometry(0.55, 16, 12);
+  bodyGeo.scale(1.4, 0.8, 0.45);
+  const bodyMat = new THREE.MeshLambertMaterial({ color: bodyColor });
+  const body = new THREE.Mesh(bodyGeo, bodyMat);
+  fishGroup.add(body);
+
+  // Eyes
+  const eyeMat = new THREE.MeshBasicMaterial({ color: 0x0f172a });
+  const eyeWhiteMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+  
+  const eyeWhiteL = new THREE.Mesh(new THREE.SphereGeometry(0.12, 8, 8), eyeWhiteMat);
+  eyeWhiteL.position.set(0.48, 0.12, 0.22);
+  const eyePupilL = new THREE.Mesh(new THREE.SphereGeometry(0.06, 8, 8), eyeMat);
+  eyePupilL.position.set(0.53, 0.12, 0.26);
+  fishGroup.add(eyeWhiteL, eyePupilL);
+
+  const eyeWhiteR = new THREE.Mesh(new THREE.SphereGeometry(0.12, 8, 8), eyeWhiteMat);
+  eyeWhiteR.position.set(0.48, 0.12, -0.22);
+  const eyePupilR = new THREE.Mesh(new THREE.SphereGeometry(0.06, 8, 8), eyeMat);
+  eyePupilR.position.set(0.53, 0.12, -0.26);
+  fishGroup.add(eyeWhiteR, eyePupilR);
+
+  // Tail fin
+  const tailGeo = new THREE.ConeGeometry(0.4, 0.7, 4);
+  tailGeo.scale(0.2, 1, 1.4);
+  tailGeo.rotateZ(Math.PI / 2);
+  const finMat = new THREE.MeshLambertMaterial({ color: finColor, transparent: true, opacity: 0.9 });
+  const tail = new THREE.Mesh(tailGeo, finMat);
+  tail.position.set(-0.85, 0, 0);
+  fishGroup.add(tail);
+
+  // Dorsal fin (top)
+  const dorsalGeo = new THREE.ConeGeometry(0.25, 0.5, 4);
+  dorsalGeo.scale(0.15, 1, 1);
+  const dorsal = new THREE.Mesh(dorsalGeo, finMat);
+  dorsal.position.set(-0.1, 0.45, 0);
+  dorsal.rotation.z = -0.3;
+  fishGroup.add(dorsal);
+
+  // Pectoral fins (sides)
+  const sideFinGeo = new THREE.ConeGeometry(0.15, 0.35, 4);
+  sideFinGeo.scale(0.1, 1, 0.8);
+  const finL = new THREE.Mesh(sideFinGeo, finMat);
+  finL.position.set(0.1, -0.15, 0.25);
+  finL.rotation.set(0.4, 0.2, -0.5);
+  const finR = new THREE.Mesh(sideFinGeo, finMat);
+  finR.position.set(0.1, -0.15, -0.25);
+  finR.rotation.set(-0.4, -0.2, -0.5);
+  fishGroup.add(finL, finR);
+
+  fishGroup.scale.set(scale, scale, scale);
+  return { group: fishGroup, tail: tail, fins: [finL, finR] };
+}
+
+// 1. Cá Vàng Đuôi Quạt (Golden Koi/Goldfish)
+const fish1 = createFish(0xfb923c, 0xfef08a, 1.15);
+scene.add(fish1.group);
+
+// 2. Cá Betta Hoàng Gia Xanh Ngọc (Cyan-Blue Betta)
+const fish2 = createFish(0x0284c7, 0x38bdf8, 0.95);
+scene.add(fish2.group);
+
+// 3. Cá Hề Nemo Đỏ Cam (Clownfish)
+const fish3 = createFish(0xf97316, 0xffedd5, 0.8);
+scene.add(fish3.group);
+
+// Interactive food pellets
+let foodPellets = [];
+function dropFood(x, y) {
+  const foodGeo = new THREE.DodecahedronGeometry(0.09, 0);
+  const foodMat = new THREE.MeshLambertMaterial({ color: 0xf59e0b });
+  for (let i = 0; i < 4; i++) {
+    const pellet = new THREE.Mesh(foodGeo, foodMat);
+    pellet.position.set(x + (Math.random() - 0.5) * 0.8, y + 1.5 + Math.random() * 0.5, (Math.random() - 0.5) * 1.5);
+    pellet.userData = { vy: 0.02 + Math.random() * 0.015 };
+    scene.add(pellet);
+    foodPellets.push(pellet);
+  }
+}
+
+// Mouse / Touch interaction
+let mouseX = 0, mouseY = 0;
+let targetX = 0, targetY = 0;
+const onPointerMove = (e) => {
+  const rect = container.getBoundingClientRect();
+  const px = (e.clientX || (e.touches && e.touches[0].clientX)) - rect.left;
+  const py = (e.clientY || (e.touches && e.touches[0].clientY)) - rect.top;
+  mouseX = ((px / rect.width) * 2 - 1) * 3;
+  mouseY = (-(py / rect.height) * 2 + 1) * 1.8;
+};
+container.addEventListener('pointermove', onPointerMove);
+container.addEventListener('pointerdown', (e) => {
+  onPointerMove(e);
+  dropFood(mouseX, mouseY);
+});
+
+// Animation Loop
+let clock = new THREE.Clock();
+function animate() {
+  requestAnimationFrame(animate);
+  const time = clock.getElapsedTime();
+
+  targetX += (mouseX - targetX) * 0.03;
+  targetY += (mouseY - targetY) * 0.03;
+
+  // Fish 1 (Goldfish - calm swimming path)
+  const f1PathX = Math.sin(time * 0.6) * 2.2 + 0.3;
+  const f1PathY = Math.cos(time * 0.8) * 0.6 + 0.3;
+  const f1Dx = Math.cos(time * 0.6);
+  fish1.group.position.set(f1PathX, f1PathY, Math.sin(time * 0.4) * 0.8);
+  fish1.group.rotation.y = f1Dx >= 0 ? -0.2 + Math.sin(time * 2) * 0.1 : Math.PI + 0.2 - Math.sin(time * 2) * 0.1;
+  fish1.group.rotation.z = Math.sin(time * 1.5) * 0.08;
+  fish1.tail.rotation.y = Math.sin(time * 6) * 0.35;
+
+  // Fish 2 (Betta - agile swimming near user focus)
+  const f2PathX = Math.sin(time * 0.9 + 2) * 2.5 - 0.4;
+  const f2PathY = Math.sin(time * 1.1 + 1) * 0.8 - 0.4;
+  const f2Dx = Math.cos(time * 0.9 + 2);
+  fish2.group.position.set(f2PathX, f2PathY, Math.cos(time * 0.7) * 1.2);
+  fish2.group.rotation.y = f2Dx >= 0 ? -0.3 + Math.sin(time * 3) * 0.15 : Math.PI + 0.3 - Math.sin(time * 3) * 0.15;
+  fish2.tail.rotation.y = Math.sin(time * 8) * 0.45;
+
+  // Fish 3 (Nemo - curious, reactive to touch/cursor)
+  const nemoTargetX = targetX * 0.8 + Math.sin(time * 1.4) * 0.9;
+  const nemoTargetY = targetY * 0.6 + Math.cos(time * 1.6) * 0.5 - 0.2;
+  const nemoDir = nemoTargetX - fish3.group.position.x;
+  fish3.group.position.x += (nemoTargetX - fish3.group.position.x) * 0.04;
+  fish3.group.position.y += (nemoTargetY - fish3.group.position.y) * 0.04;
+  fish3.group.position.z = Math.sin(time * 1.2) * 0.7;
+  fish3.group.rotation.y = nemoDir >= 0 ? 0.2 + Math.sin(time * 4) * 0.15 : Math.PI - 0.2 - Math.sin(time * 4) * 0.15;
+  fish3.tail.rotation.y = Math.sin(time * 10) * 0.5;
+
+  // Animate seaweeds swaying
+  seaweedMeshes.forEach(plant => {
+    plant.rotation.z = Math.sin(time * 1.8 + plant.userData.offset) * 0.12;
+  });
+
+  // Animate bubbles rising
+  bubbles.forEach(b => {
+    b.position.y += b.userData.speedY;
+    b.position.x = b.userData.baseX + Math.sin(time * b.userData.wobbleSpeed) * 0.12;
+    if (b.position.y > 2.8) {
+      b.position.y = -2.6;
+    }
+  });
+
+  // Animate falling food pellets
+  for (let i = foodPellets.length - 1; i >= 0; i--) {
+    const p = foodPellets[i];
+    p.position.y -= p.userData.vy;
+    p.rotation.x += 0.03;
+    p.rotation.y += 0.02;
+    if (p.position.y < -2.4) {
+      scene.remove(p);
+      foodPellets.splice(i, 1);
+    }
+  }
+
+  // Soft camera sway
+  camera.position.x = targetX * 0.15;
+  camera.position.y = targetY * 0.15;
+  camera.lookAt(0, 0, 0);
+
+  renderer.render(scene, camera);
+}
+animate();
+
+// Resize handler
+window.addEventListener('resize', () => {
+  const w = container.clientWidth || window.innerWidth;
+  const h = container.clientHeight || 340;
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+  renderer.setSize(w, h);
+});
+
+})();
+</script>
+</div>
+<!-- STITCH_THREEJS_END:ANIMATION_19 -->
+</body>
+</html>

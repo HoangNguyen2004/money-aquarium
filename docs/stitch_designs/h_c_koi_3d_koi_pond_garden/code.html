@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="vi"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_tab" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "primary-fixed-dim": "#4edea3", "on-secondary-container": "#006f66", "surface-container-high": "#dce9ff", "primary-fixed": "#6ffbbe", "inverse-primary": "#4edea3", "surface-tint": "#006c49", "surface-bright": "#f8f9ff", "on-primary-fixed": "#002113", "on-secondary-fixed": "#00201d", "error": "#ba1a1a", "secondary": "#006a61", "on-tertiary-fixed": "#2a1700", "inverse-on-surface": "#eaf1ff", "on-background": "#0b1c30", "surface": "#f8f9ff", "primary": "#006c49", "secondary-container": "#86f2e4", "surface-container": "#e5eeff", "tertiary-container": "#e29100", "surface-dim": "#cbdbf5", "primary-container": "#10b981", "background": "#f8f9ff", "on-secondary-fixed-variant": "#005049", "inverse-surface": "#213145", "on-tertiary": "#ffffff", "outline": "#6c7a71", "tertiary-fixed-dim": "#ffb95f", "on-tertiary-fixed-variant": "#653e00", "secondary-fixed-dim": "#6bd8cb", "secondary-fixed": "#89f5e7", "outline-variant": "#bbcabf", "surface-container-highest": "#d3e4fe", "surface-container-low": "#eff4ff", "on-primary-container": "#00422b", "on-tertiary-container": "#523200", "surface-container-lowest": "#ffffff", "error-container": "#ffdad6", "on-secondary": "#ffffff", "tertiary-fixed": "#ffddb8", "on-error-container": "#93000a", "tertiary": "#855300", "on-primary-fixed-variant": "#005236", "surface-variant": "#d3e4fe", "on-primary": "#ffffff", "on-surface-variant": "#3c4a42", "on-surface": "#0b1c30", "on-error": "#ffffff" }, "borderRadius": { "DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px" }, "spacing": { "space-md": "0.75rem", "gutter": "1rem", "margin": "1.25rem", "space-xs": "0.25rem", "space-lg": "1.25rem", "space-sm": "0.5rem", "space-xl": "1.75rem" }, "fontFamily": { "display-sm": ["Plus Jakarta Sans"], "label-md": ["Be Vietnam Pro"], "currency-display": ["Plus Jakarta Sans"], "display-lg": ["Plus Jakarta Sans"], "body-md": ["Be Vietnam Pro"], "headline-md": ["Plus Jakarta Sans"], "headline-lg": ["Plus Jakarta Sans"], "currency-card": ["Plus Jakarta Sans"], "label-lg": ["Be Vietnam Pro"], "body-lg": ["Be Vietnam Pro"] }, "fontSize": { "display-sm": ["26px", { "lineHeight": "34px", "letterSpacing": "-0.015em", "fontWeight": "700" }], "label-md": ["11px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }], "currency-display": ["30px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "800" }], "display-lg": ["34px", { "lineHeight": "42px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }], "headline-md": ["18px", { "lineHeight": "24px", "fontWeight": "600" }], "headline-lg": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "700" }], "currency-card": ["20px", { "lineHeight": "26px", "fontWeight": "700" }], "label-lg": ["13px", { "lineHeight": "18px", "letterSpacing": "0.01em", "fontWeight": "600" }], "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "500" }] } } } };</script><style>@layer base { html, body { width: 100%; margin: 0; padding: 0; } body { overscroll-behavior-y: none; -webkit-tap-highlight-color: transparent; } .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); } .pt-safe { padding-top: env(safe-area-inset-top, 0px); } main > :first-child { margin-top: 0 !important; } main > :last-child { margin-bottom: 0 !important; } } ::-webkit-scrollbar { display: none; } .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 24; }</style><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head><body class="bg-surface text-on-surface font-body-md text-body-md min-h-full flex flex-col selection:bg-secondary-container"><header class="fixed top-0 w-full z-50 pt-safe bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.03)]"><div class="h-16 px-margin flex items-center justify-between"><div class="flex items-center gap-space-sm"><div class="flex items-center gap-1.5 px-3 py-1.5 bg-surface-container-lowest rounded-full shadow-[0_2px_8px_rgba(0,108,73,0.06)] active:scale-95 transition-transform"><span class="material-symbols-outlined text-primary text-[18px]">calendar_today</span><span class="font-label-lg text-label-lg text-on-surface">Tháng 11, 2026</span><span class="material-symbols-outlined text-on-surface-variant text-[16px]">expand_more</span></div><div class="flex items-center gap-1 px-2.5 py-1 bg-tertiary-fixed/60 rounded-full"><span class="material-symbols-outlined text-tertiary text-[16px]">local_fire_department</span><span class="font-label-md text-label-md text-on-tertiary-fixed">12 ngày</span></div></div><div class="flex items-center gap-space-sm"><a aria-label="Cài đặt" class="w-11 h-11 flex items-center justify-center rounded-full text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low transition-colors" data-path="settings" href="#"><span class="material-symbols-outlined text-[22px]">settings</span></a><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shadow-sm"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex-1 flex flex-col relative w-full pt-16 pb-28 px-margin bg-surface"><div class="flex flex-col w-full gap-space-lg select-none">
+<!-- Level, XP & Eco-Status Header Card -->
+<div class="bg-surface-container-lowest rounded-3xl p-space-lg shadow-[0_8px_30px_rgb(0,108,73,0.06)] flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-12 h-12 rounded-2xl bg-secondary-container/40 flex items-center justify-center text-secondary shadow-inner flex-shrink-0">
+<span class="material-symbols-outlined text-[26px]">water_lux</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-1.5">
+<h1 class="font-headline-md text-headline-md text-on-surface truncate">Vườn Koi Zen Garden</h1>
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed font-label-md text-label-md">Cấp 4</span>
+</div>
+<span class="font-body-md text-body-md text-on-surface-variant truncate">Hệ sinh thái: Trưởng thành • An yên</span>
+</div>
+</div>
+<!-- 2D / 3D Perspective Switcher -->
+<div class="bg-surface-container-low p-1 rounded-full flex items-center shadow-inner">
+<button class="px-2.5 py-1 rounded-full font-label-md text-label-md text-on-surface-variant transition-all hover:text-on-surface" id="toggle-2d">2D</button>
+<button class="px-3 py-1 rounded-full font-label-md text-label-md bg-surface-container-lowest text-primary shadow-sm font-bold transition-all" id="toggle-3d">3D</button>
+</div>
+</div>
+<!-- XP Progress Capsule -->
+<div class="flex flex-col gap-1.5">
+<div class="flex items-center justify-between font-label-md text-label-md">
+<span class="text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-primary">eco</span>
+          Tiến trình hồ cá
+        </span>
+<span class="text-primary font-bold">680 / 800 XP</span>
+</div>
+<div class="w-full h-2.5 bg-surface-container-high rounded-full overflow-hidden p-0.5">
+<div class="h-full bg-gradient-to-r from-secondary to-primary-container rounded-full transition-all duration-700" style="width: 85%;"></div>
+</div>
+</div>
+<!-- 3 Currencies / Luxury Resources -->
+<div class="grid grid-cols-3 gap-2 pt-1">
+<div class="bg-surface-container-low/70 rounded-2xl p-2.5 flex items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-tertiary-fixed flex items-center justify-center flex-shrink-0 shadow-sm">
+<span class="material-symbols-outlined text-tertiary text-[18px]">monetization_on</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-md text-label-md text-on-surface-variant truncate">Xu vàng</span>
+<span class="font-headline-md text-headline-md text-on-surface leading-tight font-bold truncate">1.850</span>
+</div>
+</div>
+<div class="bg-surface-container-low/70 rounded-2xl p-2.5 flex items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-secondary-fixed flex items-center justify-center flex-shrink-0 shadow-sm">
+<span class="material-symbols-outlined text-secondary text-[18px]">lens</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-md text-label-md text-on-surface-variant truncate">Ngọc trai</span>
+<span class="font-headline-md text-headline-md text-on-surface leading-tight font-bold truncate">24</span>
+</div>
+</div>
+<div class="bg-surface-container-low/70 rounded-2xl p-2.5 flex items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-primary-fixed flex items-center justify-center flex-shrink-0 shadow-sm">
+<span class="material-symbols-outlined text-primary text-[18px]">grain</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-md text-label-md text-on-surface-variant truncate">Thức ăn</span>
+<span class="font-headline-md text-headline-md text-on-surface leading-tight font-bold truncate" id="food-count">8</span>
+</div>
+</div>
+</div>
+</div>
+<!-- 3D KOI POND GARDEN HERO CONTAINER -->
+<div class="relative w-full rounded-3xl overflow-hidden shadow-[0_12px_36px_rgba(0,106,97,0.14)] bg-gradient-to-b from-surface-container-highest to-surface-dim">
+<!-- Embedded 3D Scene Asset -->
+<!-- STITCH_THREEJS_START:ANIMATION_22 class="w-full h-[360px] rounded-3xl overflow-hidden relative shadow-lg block" -->
+<div class="w-full h-[360px] rounded-3xl overflow-hidden relative shadow-lg block" style="display:block;">
+<script src="https://ajax.googleapis.com/ajax/libs/threejs/r125/three.min.js"></script>
+<div id="threejs-container-ANIMATION_22" style="width:100%;height:100%"></div>
+<script>
+(function() {
+  const container = document.getElementById('threejs-container-ANIMATION_22');
+  const devicePixelRatio = window.devicePixelRatio || 1;
+  const scene = new THREE.Scene();
+
+// Camera setup (Top-down tilted perspective for authentic Zen Koi Pond garden)
+const width = container.clientWidth || window.innerWidth;
+const height = container.clientHeight || 420;
+const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
+camera.position.set(0, 7.5, 5.5);
+camera.lookAt(0, 0, 0.2);
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setSize(width, height);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+container.appendChild(renderer.domElement);
+
+// Lighting
+const ambientLight = new THREE.AmbientLight(0xdcfce7, 1.4);
+scene.add(ambientLight);
+
+const sunLight = new THREE.DirectionalLight(0xfffbeb, 2.0);
+sunLight.position.set(5, 10, 6);
+sunLight.castShadow = true;
+sunLight.shadow.mapSize.width = 1024;
+sunLight.shadow.mapSize.height = 1024;
+scene.add(sunLight);
+
+const pondUnderLight = new THREE.PointLight(0x06b6d4, 1.6, 12);
+pondUnderLight.position.set(0, -0.8, 0);
+scene.add(pondUnderLight);
+
+// Pond Base & Pebbles
+const pondBedGeo = new THREE.PlaneGeometry(12, 10, 32, 32);
+const pondBedMat = new THREE.MeshStandardMaterial({
+  color: 0x0f373d,
+  roughness: 0.85,
+  metalness: 0.1
+});
+const pondBed = new THREE.Mesh(pondBedGeo, pondBedMat);
+pondBed.rotation.x = -Math.PI / 2;
+pondBed.position.y = -1.2;
+pondBed.receiveShadow = true;
+scene.add(pondBed);
+
+// River Pebbles / Zen Rocks
+const rocksGroup = new THREE.Group();
+const rockColors = [0x334155, 0x475569, 0x64748b, 0x1e293b, 0x78716c];
+for (let i = 0; i < 28; i++) {
+  const rockGeo = new THREE.DodecahedronGeometry(0.18 + Math.random() * 0.22, 1);
+  rockGeo.scale(1.2 + Math.random()*0.6, 0.6 + Math.random()*0.3, 1 + Math.random()*0.5);
+  const col = rockColors[Math.floor(Math.random() * rockColors.length)];
+  const rockMat = new THREE.MeshStandardMaterial({ color: col, roughness: 0.9 });
+  const rock = new THREE.Mesh(rockGeo, rockMat);
+  const ang = Math.random() * Math.PI * 2;
+  const dist = 1.2 + Math.random() * 3.2;
+  rock.position.set(Math.cos(ang) * dist, -1.05, Math.sin(ang) * dist * 0.7);
+  rock.rotation.set(Math.random(), Math.random(), Math.random());
+  rock.castShadow = true;
+  rock.receiveShadow = true;
+  rocksGroup.add(rock);
+}
+scene.add(rocksGroup);
+
+// Water Surface Plane with caustic grid ripples
+const waterGeo = new THREE.PlaneGeometry(11, 9, 48, 48);
+const waterMat = new THREE.MeshStandardMaterial({
+  color: 0x2dd4bf,
+  transparent: true,
+  opacity: 0.45,
+  roughness: 0.15,
+  metalness: 0.2
+});
+const waterPlane = new THREE.Mesh(waterGeo, waterMat);
+waterPlane.rotation.x = -Math.PI / 2;
+waterPlane.position.y = 0.05;
+scene.add(waterPlane);
+
+// Water Lilies & Lotus Flowers
+const floraGroup = new THREE.Group();
+function createWaterLily(x, z, scale = 1, hasLotus = true) {
+  const lily = new THREE.Group();
+  // Lily Pad (Circle with a notch slice)
+  const padGeo = new THREE.RingGeometry(0.04, 0.75 * scale, 24, 1, 0.35, Math.PI * 1.82);
+  const padMat = new THREE.MeshLambertMaterial({ color: 0x15803d, side: THREE.DoubleSide });
+  const pad = new THREE.Mesh(padGeo, padMat);
+  pad.rotation.x = -Math.PI / 2;
+  pad.position.y = 0.08;
+  pad.receiveShadow = true;
+  lily.add(pad);
+
+  // Lotus Flower
+  if (hasLotus) {
+    const flowerGroup = new THREE.Group();
+    flowerGroup.position.set(0.12 * scale, 0.14, 0.08 * scale);
+    const petalGeo = new THREE.ConeGeometry(0.12 * scale, 0.32 * scale, 5);
+    petalGeo.scale(0.3, 1, 0.8);
+    const petalMat = new THREE.MeshLambertMaterial({ color: 0xf472b6 });
+    for (let p = 0; p < 8; p++) {
+      const petal = new THREE.Mesh(petalGeo, petalMat);
+      const a = (p / 8) * Math.PI * 2;
+      petal.position.set(Math.cos(a) * 0.1 * scale, 0.05, Math.sin(a) * 0.1 * scale);
+      petal.rotation.set(Math.sin(a) * 0.6, 0, -Math.cos(a) * 0.6);
+      flowerGroup.add(petal);
+    }
+    // Pistil center
+    const pistil = new THREE.Mesh(new THREE.CylinderGeometry(0.06 * scale, 0.06 * scale, 0.1, 8), new THREE.MeshBasicMaterial({ color: 0xfacc15 }));
+    pistil.position.y = 0.05;
+    flowerGroup.add(pistil);
+    lily.add(flowerGroup);
+  }
+
+  lily.position.set(x, 0, z);
+  return lily;
+}
+
+const lilies = [
+  createWaterLily(-2.2, -1.2, 1.1, true),
+  createWaterLily(-2.9, -0.6, 0.8, false),
+  createWaterLily(2.4, 1.2, 1.2, true),
+  createWaterLily(2.8, 0.4, 0.75, false),
+  createWaterLily(-1.8, 1.8, 0.9, true)
+];
+lilies.forEach(l => floraGroup.add(l));
+scene.add(floraGroup);
+
+// Organic 3D Japanese Koi Fish Model with Multi-Segment Spine Rig
+function createKoiFish(primaryColor, patternColor, scale = 1.0) {
+  const koi = new THREE.Group();
+  const segments = [];
+
+  // Spine segments for realistic sinusoidal swimming motion
+  // Segment 0: Head
+  const headGeo = new THREE.ConeGeometry(0.32 * scale, 0.75 * scale, 12);
+  headGeo.rotateX(Math.PI / 2);
+  headGeo.scale(1.1, 0.7, 1);
+  const headMat = new THREE.MeshStandardMaterial({ color: primaryColor, roughness: 0.3 });
+  const head = new THREE.Mesh(headGeo, headMat);
+  head.castShadow = true;
+  koi.add(head);
+
+  // Eyes
+  const eyeMat = new THREE.MeshBasicMaterial({ color: 0x0f172a });
+  const eyeL = new THREE.Mesh(new THREE.SphereGeometry(0.05 * scale, 8, 8), eyeMat);
+  eyeL.position.set(0.18 * scale, 0.08 * scale, 0.12 * scale);
+  const eyeR = new THREE.Mesh(new THREE.SphereGeometry(0.05 * scale, 8, 8), eyeMat);
+  eyeR.position.set(-0.18 * scale, 0.08 * scale, 0.12 * scale);
+  koi.add(eyeL, eyeR);
+
+  // Whiskers (Barbel) typical of Koi
+  const whiskerMat = new THREE.MeshBasicMaterial({ color: 0xffedd5 });
+  const whiskerGeo = new THREE.CylinderGeometry(0.015, 0.005, 0.25 * scale, 4);
+  const wL = new THREE.Mesh(whiskerGeo, whiskerMat);
+  wL.position.set(0.12 * scale, -0.06 * scale, 0.38 * scale);
+  wL.rotation.set(0.3, 0, -0.7);
+  const wR = new THREE.Mesh(whiskerGeo, whiskerMat);
+  wR.position.set(-0.12 * scale, -0.06 * scale, 0.38 * scale);
+  wR.rotation.set(0.3, 0, 0.7);
+  koi.add(wL, wR);
+
+  // Segment 1: Upper Torso (With Koi Kohaku Spot / Pattern)
+  const torso1Geo = new THREE.SphereGeometry(0.38 * scale, 12, 10);
+  torso1Geo.scale(0.9, 0.65, 1.2);
+  const patternMat = new THREE.MeshStandardMaterial({ color: patternColor, roughness: 0.3 });
+  const torso1 = new THREE.Mesh(torso1Geo, patternMat);
+  torso1.position.z = -0.45 * scale;
+  torso1.castShadow = true;
+  koi.add(torso1);
+  segments.push(torso1);
+
+  // Pectoral Fins (flowing side fins)
+  const finMat = new THREE.MeshStandardMaterial({
+    color: 0xffffff,
+    transparent: true,
+    opacity: 0.8,
+    roughness: 0.2
+  });
+  const pecFinGeo = new THREE.ConeGeometry(0.18 * scale, 0.55 * scale, 4);
+  pecFinGeo.scale(0.1, 1, 0.9);
+  const pecFinL = new THREE.Mesh(pecFinGeo, finMat);
+  pecFinL.position.set(0.35 * scale, -0.05 * scale, -0.3 * scale);
+  pecFinL.rotation.set(0.2, 0.5, -1.2);
+  const pecFinR = new THREE.Mesh(pecFinGeo, finMat);
+  pecFinR.position.set(-0.35 * scale, -0.05 * scale, -0.3 * scale);
+  pecFinR.rotation.set(0.2, -0.5, 1.2);
+  koi.add(pecFinL, pecFinR);
+
+  // Dorsal fin (long top fin)
+  const dorsalGeo = new THREE.ConeGeometry(0.1 * scale, 0.8 * scale, 4);
+  dorsalGeo.scale(0.08, 1, 0.8);
+  const dorsalFin = new THREE.Mesh(dorsalGeo, finMat);
+  dorsalFin.position.set(0, 0.3 * scale, -0.55 * scale);
+  dorsalFin.rotation.x = -0.6;
+  koi.add(dorsalFin);
+
+  // Segment 2: Mid Body
+  const torso2Geo = new THREE.SphereGeometry(0.28 * scale, 10, 8);
+  torso2Geo.scale(0.85, 0.6, 1.1);
+  const torso2 = new THREE.Mesh(torso2Geo, headMat);
+  torso2.position.z = -0.9 * scale;
+  torso2.castShadow = true;
+  koi.add(torso2);
+  segments.push(torso2);
+
+  // Segment 3: Tail Base
+  const tailBaseGeo = new THREE.CylinderGeometry(0.12 * scale, 0.06 * scale, 0.5 * scale, 8);
+  tailBaseGeo.rotateX(Math.PI / 2);
+  const tailBase = new THREE.Mesh(tailBaseGeo, patternMat);
+  tailBase.position.z = -1.35 * scale;
+  tailBase.castShadow = true;
+  koi.add(tailBase);
+  segments.push(tailBase);
+
+  // Segment 4: Flowing Wide Japanese Koi Tail Fin
+  const tailFinGeo = new THREE.ConeGeometry(0.35 * scale, 0.75 * scale, 4);
+  tailFinGeo.scale(0.08, 1, 1.4);
+  tailFinGeo.rotateX(Math.PI / 2);
+  const tailFin = new THREE.Mesh(tailFinGeo, finMat);
+  tailFin.position.z = -1.75 * scale;
+  koi.add(tailFin);
+  segments.push(tailFin);
+
+  koi.position.y = -0.45;
+  return {
+    mesh: koi,
+    segments: segments,
+    pecFinL: pecFinL,
+    pecFinR: pecFinR,
+    tailFin: tailFin,
+    speed: 0.8 + Math.random() * 0.4,
+    angle: Math.random() * Math.PI * 2,
+    radiusX: 1.6 + Math.random() * 1.5,
+    radiusZ: 1.0 + Math.random() * 1.2,
+    wiggleOffset: Math.random() * 10
+  };
+}
+
+// 3 Iconic Koi Fish types
+// 1. Kohaku (Classic White with Scarlet-Orange patches)
+const koi1 = createKoiFish(0xf8fafc, 0xe11d48, 1.15);
+scene.add(koi1.mesh);
+
+// 2. Yamabuki Ogon (Glorious Metallic Golden Koi)
+const koi2 = createKoiFish(0xf59e0b, 0xfde047, 1.0);
+scene.add(koi2.mesh);
+
+// 3. Showa / Tancho (Ink Blue-Black with Tangerine Red spot)
+const koi3 = createKoiFish(0x0f172a, 0xf97316, 0.9);
+scene.add(koi3.mesh);
+
+const allKoi = [koi1, koi2, koi3];
+
+// Ripple Ring Particle System on Touch/Click
+const ripples = [];
+const rippleGeo = new THREE.RingGeometry(0.05, 0.08, 32);
+const rippleMat = new THREE.MeshBasicMaterial({ color: 0x99f6e4, transparent: true, opacity: 0.8, side: THREE.DoubleSide });
+
+function addRipple(x, z) {
+  for (let i = 0; i < 2; i++) {
+    const r = new THREE.Mesh(rippleGeo, rippleMat.clone());
+    r.rotation.x = -Math.PI / 2;
+    r.position.set(x, 0.06, z);
+    r.userData = { scale: 0.2, maxScale: 1.8 + i * 0.6, opacity: 0.8, speed: 0.035 };
+    scene.add(r);
+    ripples.push(r);
+  }
+}
+
+// Interactive Floating Food / Sakura Petals
+let foodPellets = [];
+function dropZenFood(x, z) {
+  const pGeo = new THREE.DodecahedronGeometry(0.07, 0);
+  const pMat = new THREE.MeshStandardMaterial({ color: 0xfbbf24, roughness: 0.4 });
+  for (let i = 0; i < 4; i++) {
+    const p = new THREE.Mesh(pGeo, pMat);
+    p.position.set(x + (Math.random() - 0.5) * 0.5, 0.06, z + (Math.random() - 0.5) * 0.5);
+    p.userData = { life: 250, targetY: -0.2 };
+    scene.add(p);
+    foodPellets.push(p);
+  }
+  addRipple(x, z);
+}
+
+// Raycaster & Pointer Interaction
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+let targetKoiAttract = new THREE.Vector3(0, 0, 0);
+let hasAttraction = false;
+
+const onPointer = (e) => {
+  const rect = container.getBoundingClientRect();
+  const px = (e.clientX || (e.touches && e.touches[0].clientX)) - rect.left;
+  const py = (e.clientY || (e.touches && e.touches[0].clientY)) - rect.top;
+  mouse.x = (px / rect.width) * 2 - 1;
+  mouse.y = -(py / rect.height) * 2 + 1;
+
+  raycaster.setFromCamera(mouse, camera);
+  const intersects = raycaster.intersectObject(waterPlane);
+  if (intersects.length > 0) {
+    const pt = intersects[0].point;
+    targetKoiAttract.copy(pt);
+    hasAttraction = true;
+    if (e.type === 'pointerdown' || e.type === 'touchstart') {
+      dropZenFood(pt.x, pt.z);
+    }
+  }
+};
+
+container.addEventListener('pointermove', onPointer);
+container.addEventListener('pointerdown', onPointer);
+
+// Animation Loop
+let clock = new THREE.Clock();
+function animate() {
+  requestAnimationFrame(animate);
+  const t = clock.getElapsedTime();
+
+  // Animate Water subtle waves
+  const vPos = waterPlane.geometry.attributes.position;
+  for (let i = 0; i < vPos.count; i++) {
+    const u = vPos.getX(i);
+    const v = vPos.getY(i);
+    const z = Math.sin(u * 1.5 + t * 2.0) * 0.03 + Math.cos(v * 1.5 + t * 1.8) * 0.03;
+    vPos.setZ(i, z);
+  }
+  vPos.needsUpdate = true;
+
+  // Animate Lilies floating and swaying
+  lilies.forEach((lily, idx) => {
+    lily.position.y = Math.sin(t * 1.6 + idx * 1.2) * 0.025;
+    lily.rotation.z = Math.sin(t * 0.8 + idx) * 0.02;
+  });
+
+  // Animate Ripples
+  for (let i = ripples.length - 1; i >= 0; i--) {
+    const rip = ripples[i];
+    rip.userData.scale += rip.userData.speed;
+    rip.scale.set(rip.userData.scale, rip.userData.scale, 1);
+    rip.material.opacity = (1 - (rip.userData.scale / rip.userData.maxScale)) * 0.8;
+    if (rip.userData.scale >= rip.userData.maxScale) {
+      scene.remove(rip);
+      ripples.splice(i, 1);
+    }
+  }
+
+  // Animate Koi Swimming with organic spine wave & fin flaps
+  allKoi.forEach((koi, idx) => {
+    // Path update
+    koi.angle += 0.012 * koi.speed;
+    let targetX = Math.cos(koi.angle + idx * 2.1) * koi.radiusX;
+    let targetZ = Math.sin(koi.angle * 1.2 + idx * 1.5) * koi.radiusZ;
+
+    // Attract gently toward user touch/food if nearby
+    if (hasAttraction && foodPellets.length > 0) {
+      targetX = targetX * 0.4 + targetKoiAttract.x * 0.6;
+      targetZ = targetZ * 0.4 + targetKoiAttract.z * 0.6;
+    }
+
+    const currentX = koi.mesh.position.x;
+    const currentZ = koi.mesh.position.z;
+    const dx = targetX - currentX;
+    const dz = targetZ - currentZ;
+
+    koi.mesh.position.x += dx * 0.04;
+    koi.mesh.position.z += dz * 0.04;
+    koi.mesh.position.y = -0.38 + Math.sin(t * 2.5 + koi.wiggleOffset) * 0.05;
+
+    // Rotate toward swimming direction smoothly
+    const desiredHeading = Math.atan2(dx, dz);
+    let diff = desiredHeading - koi.mesh.rotation.y;
+    while (diff < -Math.PI) diff += Math.PI * 2;
+    while (diff > Math.PI) diff -= Math.PI * 2;
+    koi.mesh.rotation.y += diff * 0.08;
+
+    // Spine undulation (natural wave motion from head to tail)
+    const wiggle = Math.sin(t * 7.0 * koi.speed + koi.wiggleOffset);
+    koi.segments.forEach((seg, sIdx) => {
+      const delay = (sIdx + 1) * 0.4;
+      const segWiggle = Math.sin(t * 7.0 * koi.speed - delay + koi.wiggleOffset);
+      seg.rotation.y = segWiggle * (0.12 * (sIdx + 1));
+      seg.position.x = segWiggle * (0.04 * (sIdx + 1));
+    });
+
+    // Pectoral fin paddling
+    koi.pecFinL.rotation.z = -1.2 + Math.sin(t * 6 + koi.wiggleOffset) * 0.25;
+    koi.pecFinR.rotation.z = 1.2 - Math.sin(t * 6 + koi.wiggleOffset) * 0.25;
+  });
+
+  // Food life and sink
+  for (let i = foodPellets.length - 1; i >= 0; i--) {
+    const fp = foodPellets[i];
+    fp.userData.life--;
+    fp.position.y -= 0.002;
+    if (fp.userData.life <= 0 || fp.position.y < -0.9) {
+      scene.remove(fp);
+      foodPellets.splice(i, 1);
+    }
+  }
+
+  // Gentle camera sway
+  camera.position.x = Math.sin(t * 0.25) * 0.25;
+  camera.lookAt(0, 0, 0.2);
+
+  renderer.render(scene, camera);
+}
+animate();
+
+// Resize handler
+window.addEventListener('resize', () => {
+  const w = container.clientWidth || window.innerWidth;
+  const h = container.clientHeight || 420;
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+  renderer.setSize(w, h);
+});
+
+})();
+</script>
+</div>
+<!-- STITCH_THREEJS_END:ANIMATION_22 -->
+<!-- Top Floating Water Clarity Pill -->
+<div class="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none">
+<div class="pointer-events-auto bg-surface-container-lowest/85 backdrop-blur-md px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-[0_4px_16px_rgba(0,0,0,0.06)]">
+<span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span>
+<span class="font-label-md text-label-md text-on-surface font-semibold">Độ trong: 99% • Thanh lọc tự nhiên</span>
+</div>
+<div class="pointer-events-auto w-8 h-8 rounded-full bg-surface-container-lowest/85 backdrop-blur-md flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors cursor-pointer shadow-sm">
+<span class="material-symbols-outlined text-[18px]">photo_camera</span>
+</div>
+</div>
+<!-- Active Swimming Koi Badges (Horizontal scrollable glass tags) -->
+<div class="absolute top-14 left-3 right-3 flex gap-2 overflow-x-auto pb-1 pointer-events-auto" style="scrollbar-width: none;">
+<div class="flex-shrink-0 bg-surface-container-lowest/75 backdrop-blur-md px-2.5 py-1 rounded-full flex items-center gap-1.5 shadow-sm active:scale-95 transition-transform cursor-pointer">
+<span class="w-2 h-2 rounded-full bg-error"></span>
+<span class="font-label-md text-label-md text-on-surface">Kohaku Đỏ Trắng</span>
+</div>
+<div class="flex-shrink-0 bg-surface-container-lowest/75 backdrop-blur-md px-2.5 py-1 rounded-full flex items-center gap-1.5 shadow-sm active:scale-95 transition-transform cursor-pointer">
+<span class="w-2 h-2 rounded-full bg-tertiary-fixed-dim"></span>
+<span class="font-label-md text-label-md text-on-surface">Yamabuki Hoàng Kim</span>
+</div>
+<div class="flex-shrink-0 bg-surface-container-lowest/75 backdrop-blur-md px-2.5 py-1 rounded-full flex items-center gap-1.5 shadow-sm active:scale-95 transition-transform cursor-pointer">
+<span class="w-2 h-2 rounded-full bg-inverse-surface"></span>
+<span class="font-label-md text-label-md text-on-surface">Showa Thủy Mặc</span>
+</div>
+</div>
+<!-- Bottom Interactive Touch Bar -->
+<div class="absolute bottom-3 left-3 right-3 flex items-center gap-2 pointer-events-auto">
+<button class="flex-1 bg-surface-container-lowest/90 backdrop-blur-md hover:bg-surface-container-lowest text-on-surface px-3 py-2.5 rounded-2xl flex items-center justify-center gap-1.5 shadow-[0_4px_16px_rgba(0,0,0,0.08)] active:scale-95 transition-all" id="feed-action-btn">
+<span class="material-symbols-outlined text-[20px] text-tertiary">spa</span>
+<span class="font-label-lg text-label-lg font-semibold truncate">Thả mồi (+15 XP)</span>
+</button>
+<button class="w-11 h-11 bg-surface-container-lowest/90 backdrop-blur-md hover:bg-surface-container-lowest rounded-2xl flex items-center justify-center text-primary shadow-[0_4px_16px_rgba(0,0,0,0.08)] active:scale-95 transition-all flex-shrink-0" id="lotus-action-btn" title="Rải hoa sen">
+<span class="material-symbols-outlined text-[20px]">filter_vintage</span>
+</button>
+<button class="w-11 h-11 bg-surface-container-lowest/90 backdrop-blur-md hover:bg-surface-container-lowest rounded-2xl flex items-center justify-center text-secondary shadow-[0_4px_16px_rgba(0,0,0,0.08)] active:scale-95 transition-all flex-shrink-0" id="clean-action-btn" title="Dọn rong rêu">
+<span class="material-symbols-outlined text-[20px]">auto_awesome</span>
+</button>
+</div>
+<!-- Ripple Effect Container for interaction feedback -->
+<div class="absolute inset-0 pointer-events-none overflow-hidden" id="pond-ripple-container"></div>
+</div>
+<!-- Financial Habits & Koi Sanctuary Care Section -->
+<div class="flex flex-col gap-space-md">
+<div class="flex items-center justify-between px-1">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-primary text-[20px]">task_alt</span>
+<h2 class="font-headline-md text-headline-md text-on-surface">Thói quen nuôi cá &amp; Ví tài chính</h2>
+</div>
+<span class="font-label-md text-label-md text-on-surface-variant font-medium">Hôm nay</span>
+</div>
+<!-- Habit 1: Completed Tracking -->
+<div class="bg-surface-container-lowest rounded-2xl p-space-md shadow-sm flex items-center justify-between gap-space-sm">
+<div class="flex items-center gap-3 min-w-0">
+<div class="w-10 h-10 rounded-xl bg-primary-fixed/50 flex items-center justify-center text-primary flex-shrink-0">
+<span class="material-symbols-outlined text-[22px]">edit_note</span>
+</div>
+<div class="flex flex-col min-w-0">
+<h3 class="font-label-lg text-label-lg text-on-surface truncate">Ghi chép chi tiêu hôm nay</h3>
+<p class="font-body-md text-body-md text-primary font-medium flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">check_circle</span>
+            3/3 giao dịch hoàn thành
+          </p>
+</div>
+</div>
+<div class="flex flex-col items-end flex-shrink-0">
+<span class="px-2 py-0.5 rounded-full bg-tertiary-fixed/60 font-label-md text-label-md text-on-tertiary-fixed font-bold">+60 xu</span>
+<span class="font-label-md text-label-md text-primary font-semibold mt-0.5">+2 thức ăn</span>
+</div>
+</div>
+<!-- Habit 2: Budgeting Discipline -->
+<div class="bg-surface-container-lowest rounded-2xl p-space-md shadow-sm flex items-center justify-between gap-space-sm">
+<div class="flex items-center gap-3 min-w-0">
+<div class="w-10 h-10 rounded-xl bg-secondary-fixed/50 flex items-center justify-center text-secondary flex-shrink-0">
+<span class="material-symbols-outlined text-[22px]">restaurant</span>
+</div>
+<div class="flex flex-col min-w-0">
+<h3 class="font-label-lg text-label-lg text-on-surface truncate">Ăn uống dưới ngân sách 150k</h3>
+<p class="font-body-md text-body-md text-on-surface-variant truncate">Đã dùng 85.000₫ • Tuyệt vời</p>
+</div>
+</div>
+<div class="flex flex-col items-end flex-shrink-0">
+<span class="px-2 py-0.5 rounded-full bg-secondary-fixed font-label-md text-label-md text-on-secondary-fixed font-bold">+1 ngọc trai</span>
+<span class="font-label-md text-label-md text-on-surface-variant mt-0.5">Còn 65k</span>
+</div>
+</div>
+<!-- Habit 3: Habit Streak Celebration Banner -->
+<div class="bg-gradient-to-r from-tertiary-fixed/80 via-surface-container-low to-primary-fixed/40 rounded-2xl p-space-md flex items-center justify-between shadow-sm">
+<div class="flex items-center gap-3 min-w-0">
+<div class="w-10 h-10 rounded-xl bg-tertiary-container flex items-center justify-center text-on-tertiary-container shadow-sm flex-shrink-0">
+<span class="material-symbols-outlined text-[22px]">local_fire_department</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-1.5">
+<h3 class="font-label-lg text-label-lg text-on-surface font-bold truncate">Chuỗi 6 ngày tích lũy liên tiếp</h3>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant truncate">Huy hiệu Ngọn lửa Koi kiên định</p>
+</div>
+</div>
+<div class="w-8 h-8 rounded-full bg-surface-container-lowest flex items-center justify-center shadow-xs flex-shrink-0">
+<span class="material-symbols-outlined text-primary text-[18px]">verified</span>
+</div>
+</div>
+</div>
+<!-- Zen Ecosystem, Collections & Social Visiting -->
+<div class="flex flex-col gap-space-md">
+<div class="flex items-center justify-between px-1">
+<h2 class="font-headline-md text-headline-md text-on-surface">Khu sinh thái &amp; Cửa hàng Zen</h2>
+<a class="font-label-lg text-label-lg text-primary font-semibold hover:underline" href="#">Khám phá</a>
+</div>
+<div class="grid grid-cols-3 gap-2.5">
+<!-- Card 1: Collection -->
+<a class="bg-surface-container-lowest rounded-2xl p-3 flex flex-col items-center text-center gap-2 shadow-sm hover:shadow-md transition-all active:scale-95 group" href="#">
+<div class="w-12 h-12 rounded-2xl bg-primary-fixed/40 group-hover:bg-primary-fixed flex items-center justify-center text-primary transition-colors">
+<span class="material-symbols-outlined text-[26px]">inventory_2</span>
+</div>
+<div class="flex flex-col min-w-0 w-full">
+<span class="font-label-lg text-label-lg text-on-surface font-bold truncate">Bộ sưu tập Koi</span>
+<span class="font-label-md text-label-md text-primary font-semibold mt-0.5 truncate">12/36 giống quý</span>
+<span class="font-body-md text-[11px] text-on-surface-variant truncate mt-0.5">Kohaku, Sanke...</span>
+</div>
+</a>
+<!-- Card 2: Zen Garden Shop -->
+<a class="bg-surface-container-lowest rounded-2xl p-3 flex flex-col items-center text-center gap-2 shadow-sm hover:shadow-md transition-all active:scale-95 group" href="#">
+<div class="w-12 h-12 rounded-2xl bg-secondary-fixed/40 group-hover:bg-secondary-fixed flex items-center justify-center text-secondary transition-colors">
+<span class="material-symbols-outlined text-[26px]">storefront</span>
+</div>
+<div class="flex flex-col min-w-0 w-full">
+<span class="font-label-lg text-label-lg text-on-surface font-bold truncate">Cửa hàng Zen</span>
+<span class="font-label-md text-label-md text-secondary font-semibold mt-0.5 truncate">Đèn đá &amp; Cầu gỗ</span>
+<span class="font-body-md text-[11px] text-on-surface-variant truncate mt-0.5">Trang trí sân vườn</span>
+</div>
+</a>
+<!-- Card 3: Friends Pond Visiting -->
+<a class="bg-surface-container-lowest rounded-2xl p-3 flex flex-col items-center text-center gap-2 shadow-sm hover:shadow-md transition-all active:scale-95 group" href="#">
+<div class="w-12 h-12 rounded-2xl bg-tertiary-fixed/40 group-hover:bg-tertiary-fixed flex items-center justify-center text-tertiary transition-colors">
+<span class="material-symbols-outlined text-[26px]">diversity_1</span>
+</div>
+<div class="flex flex-col min-w-0 w-full">
+<span class="font-label-lg text-label-lg text-on-surface font-bold truncate">Vườn bạn bè</span>
+<span class="font-label-md text-label-md text-tertiary font-semibold mt-0.5 truncate">Giao lưu • Tặng xu</span>
+<span class="font-body-md text-[11px] text-on-surface-variant truncate mt-0.5">3 bạn ghé thăm</span>
+</div>
+</a>
+</div>
+</div>
+<!-- Ambient Micro-Interaction Script for Feeding and Ripples -->
+<script>
+    (function() {
+      const feedBtn = document.getElementById('feed-action-btn');
+      const lotusBtn = document.getElementById('lotus-action-btn');
+      const cleanBtn = document.getElementById('clean-action-btn');
+      const foodCountEl = document.getElementById('food-count');
+      const rippleContainer = document.getElementById('pond-ripple-container');
+      const toggle2D = document.getElementById('toggle-2d');
+      const toggle3D = document.getElementById('toggle-3d');
+
+      let foodCount = 8;
+
+      function spawnFloatingNotice(text, x, y, colorClass) {
+        if (!rippleContainer) return;
+        const note = document.createElement('div');
+        note.className = 'absolute font-label-md text-label-md font-bold px-2.5 py-1 rounded-full shadow-md bg-surface-container-lowest/90 ' + colorClass;
+        note.style.left = (x || 50) + '%';
+        note.style.top = (y || 50) + '%';
+        note.style.transform = 'translate(-50%, -50%)';
+        note.style.transition = 'all 1s cubic-bezier(0.16, 1, 0.3, 1)';
+        note.style.opacity = '1';
+        note.innerText = text;
+        rippleContainer.appendChild(note);
+
+        requestAnimationFrame(() => {
+          note.style.transform = 'translate(-50%, -90px) scale(1.05)';
+          note.style.opacity = '0';
+        });
+
+        setTimeout(() => {
+          if (note.parentNode) note.parentNode.removeChild(note);
+        }, 1100);
+      }
+
+      function spawnWaterRipple(x, y) {
+        if (!rippleContainer) return;
+        const ripple = document.createElement('div');
+        ripple.className = 'absolute rounded-full border border-primary-container/40 pointer-events-none';
+        ripple.style.left = x + 'px';
+        ripple.style.top = y + 'px';
+        ripple.style.width = '10px';
+        ripple.style.height = '10px';
+        ripple.style.transform = 'translate(-50%, -50%) scale(1)';
+        ripple.style.transition = 'all 0.9s cubic-bezier(0.1, 0.7, 0.1, 1)';
+        ripple.style.opacity = '0.8';
+        rippleContainer.appendChild(ripple);
+
+        requestAnimationFrame(() => {
+          ripple.style.transform = 'translate(-50%, -50%) scale(14)';
+          ripple.style.opacity = '0';
+        });
+
+        setTimeout(() => {
+          if (ripple.parentNode) ripple.parentNode.removeChild(ripple);
+        }, 950);
+      }
+
+      if (feedBtn) {
+        feedBtn.addEventListener('click', (e) => {
+          if (foodCount > 0) {
+            foodCount--;
+            if (foodCountEl) foodCountEl.innerText = foodCount;
+            spawnFloatingNotice('🌸 Đàn Koi vui vẻ! +15 XP', 50, 65, 'text-primary');
+            spawnWaterRipple(rippleContainer.clientWidth / 2, rippleContainer.clientHeight * 0.6);
+          } else {
+            spawnFloatingNotice('Cần làm thêm nhiệm vụ để nhận mồi!', 50, 65, 'text-tertiary');
+          }
+        });
+      }
+
+      if (lotusBtn) {
+        lotusBtn.addEventListener('click', () => {
+          spawnFloatingNotice('🍃 Đã thả 3 nụ sen thơm mát', 40, 55, 'text-secondary');
+          spawnWaterRipple(rippleContainer.clientWidth * 0.4, rippleContainer.clientHeight * 0.5);
+        });
+      }
+
+      if (cleanBtn) {
+        cleanBtn.addEventListener('click', () => {
+          spawnFloatingNotice('✨ Nước trong vắt 100%', 65, 55, 'text-primary-container');
+          spawnWaterRipple(rippleContainer.clientWidth * 0.65, rippleContainer.clientHeight * 0.5);
+        });
+      }
+
+      if (toggle2D && toggle3D) {
+        toggle2D.addEventListener('click', () => {
+          toggle2D.className = 'px-3 py-1 rounded-full font-label-md text-label-md bg-surface-container-lowest text-primary shadow-sm font-bold transition-all';
+          toggle3D.className = 'px-2.5 py-1 rounded-full font-label-md text-label-md text-on-surface-variant transition-all hover:text-on-surface';
+        });
+
+        toggle3D.addEventListener('click', () => {
+          toggle3D.className = 'px-3 py-1 rounded-full font-label-md text-label-md bg-surface-container-lowest text-primary shadow-sm font-bold transition-all';
+          toggle2D.className = 'px-2.5 py-1 rounded-full font-label-md text-label-md text-on-surface-variant transition-all hover:text-on-surface';
+        });
+      }
+    })();
+  </script>
+</div></main><nav class="fixed bottom-0 w-full z-50 pb-safe bg-surface-container-lowest/85 backdrop-blur-xl shadow-[0_-4px_24px_rgba(0,106,97,0.07)]" data-active-classes="text-primary font-bold"><div class="relative flex items-center justify-between h-20 px-gutter"><a class="flex flex-col items-center justify-center flex-1 py-1 text-on-surface-variant hover:text-primary transition-colors min-h-[44px]" data-path="tong-quan" href="#"><span class="material-symbols-outlined text-[24px]">account_balance_wallet</span><span class="font-label-md text-label-md mt-0.5">Tổng quan</span></a><a class="flex flex-col items-center justify-center flex-1 py-1 text-on-surface-variant hover:text-primary transition-colors min-h-[44px]" data-path="ke-hoach" href="#"><span class="material-symbols-outlined text-[24px]">flag</span><span class="font-label-md text-label-md mt-0.5">Kế hoạch</span></a><div class="relative flex-1 flex justify-center items-center"><a aria-label="Thêm chi tiêu nhanh" class="absolute -top-7 w-14 h-14 rounded-full bg-primary-container text-on-primary flex items-center justify-center shadow-[0_10px_24px_-4px_rgba(16,185,129,0.38)] active:scale-95 transition-transform min-h-[44px] min-w-[44px]" data-path="quick-add-flow" href="#"><span class="material-symbols-outlined text-[30px]">add</span></a></div><a class="flex flex-col items-center justify-center flex-1 py-1 text-on-surface-variant hover:text-primary transition-colors min-h-[44px]" data-path="bao-cao" href="#"><span class="material-symbols-outlined text-[24px]">pie_chart</span><span class="font-label-md text-label-md mt-0.5">Báo cáo</span></a><a class="flex flex-col items-center justify-center flex-1 py-1 text-on-surface-variant hover:text-primary transition-colors min-h-[44px]" data-path="ho-ca" href="#"><span class="material-symbols-outlined text-[24px]">set_meal</span><span class="font-label-md text-label-md mt-0.5">Hồ cá</span></a></div></nav></body></html>

@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+import { rasterFish } from './fishPaint';
+import { validCustomFish, type CustomFish } from './customFish';
+const fish: CustomFish = { id:'custom-test', name:'Mây', inPond:true, color:'#55B9A4', strokes:[{color:'#FF0000',width:20,points:[[80,100],[160,100]]},{erase:true,color:'#FFFFFF',width:6,points:[[120,95],[120,105]]}] };
+const pixel=(data:Uint8Array,x:number,y:number)=>Array.from(data.slice((y*320+x)*4,(y*320+x)*4+3));
+const pixels=rasterFish(fish);
+assert.deepEqual(pixel(pixels,90,100),[255,0,0]);
+assert.deepEqual(pixel(pixels,120,100),[85,185,164]);
+assert.deepEqual(pixel(rasterFish({...fish,color:'#0000FF'}),120,100),[0,0,255], 'Erasing follows body colour changes');
+assert.deepEqual(pixel(pixels,50,50),[85,185,164]);
+assert.ok(validCustomFish(fish));
+assert.ok(!validCustomFish({...fish,strokes:[null]}));
+assert.ok(!validCustomFish({...fish,strokes:[{...fish.strokes[0],erase:'yes'}]}));
+assert.equal(rasterFish({...fish,strokes:[{color:'#FFFFFF',width:30,points:[[0,0],[320,200]]}]}).length,320*200*4);
+console.log('fish paint: colours, eraser, background changes, validation, boundary clipping PASS');
